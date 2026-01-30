@@ -1,6 +1,6 @@
 [build]
 builder = "nixpacks"
-buildCommand = "rm -rf .next/cache/* && pnpm run build"
+buildCommand = "rm -rf .next/cache/* .next/server .next/static node_modules/.cache/* && pnpm run build"
 
 [deploy]
 startCommand = "pnpm start"
