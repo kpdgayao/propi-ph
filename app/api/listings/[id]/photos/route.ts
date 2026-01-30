@@ -40,27 +40,28 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     // Parse multipart form data
     const formData = await request.formData();
 
-    // Debug: log all form data keys
-    const allKeys = Array.from(formData.keys());
-    console.log("Form data keys:", allKeys);
-
-    // Try both "photos" and "file" field names
-    let files = formData.getAll("photos") as File[];
-    if (!files || files.length === 0) {
-      files = formData.getAll("file") as File[];
-    }
-
-    // Also try getting a single file
-    if (!files || files.length === 0) {
-      const singleFile = formData.get("photos") || formData.get("file");
-      if (singleFile && singleFile instanceof File) {
-        files = [singleFile];
+    // Debug: log all form data entries
+    const allEntries: { key: string; type: string; value: string }[] = [];
+    formData.forEach((value, key) => {
+      if (value instanceof File) {
+        allEntries.push({ key, type: "File", value: `${value.name} (${value.size} bytes, ${value.type})` });
+      } else {
+        allEntries.push({ key, type: typeof value, value: String(value).substring(0, 100) });
       }
-    }
+    });
+    console.log("Form data entries:", JSON.stringify(allEntries));
 
-    if (!files || files.length === 0) {
+    // Collect all files from form data
+    const files: File[] = [];
+    formData.forEach((value, key) => {
+      if (value instanceof File) {
+        files.push(value);
+      }
+    });
+
+    if (files.length === 0) {
       return NextResponse.json(
-        { error: "No files provided", debug: { keys: allKeys } },
+        { error: "No files provided", debug: { entries: allEntries } },
         { status: 400 }
       );
     }
