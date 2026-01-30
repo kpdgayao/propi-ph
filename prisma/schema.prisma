@@ -1,0 +1,143 @@
+// Propi MVP Schema
+// Simplified for initial testing with TowerHomes
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+// ============================================
+// AGENTS & AUTHENTICATION
+// ============================================
+
+model Agent {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  phone           String
+  passwordHash    String
+  name            String
+  prcLicense      String   @unique
+  photo           String?
+  bio             String?  @db.Text
+  areasServed     String[] // ["Baguio City", "La Trinidad", "Benguet"]
+  specializations String[] // ["Residential", "Commercial", "Land"]
+  defaultSplit    Decimal  @default(50) // Default co-broke split %
+  isActive        Boolean  @default(true)
+
+  // Relations
+  listings Property[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([prcLicense])
+}
+
+// ============================================
+// PROPERTIES & LISTINGS
+// ============================================
+
+model Property {
+  id      String @id @default(cuid())
+  agentId String
+  agent   Agent  @relation(fields: [agentId], references: [id])
+
+  // Basic Info
+  title           String
+  description     String          @db.Text
+  aiDescription   String?         @db.Text
+  propertyType    PropertyType
+  transactionType TransactionType
+
+  // Pricing
+  price       Decimal
+  pricePerSqm Decimal?
+
+  // Location
+  province  String
+  city      String
+  barangay  String?
+  address   String?
+  landmark  String?
+  latitude  Decimal?
+  longitude Decimal?
+
+  // Specifications
+  bedrooms  Int?
+  bathrooms Int?
+  carpark   Int?
+  lotArea   Decimal?
+  floorArea Decimal?
+  floors    Int?
+  yearBuilt Int?
+
+  // Features
+  features   String[]
+  furnishing Furnishing?
+
+  // Media
+  photos   String[] // URLs from R2/S3
+  videoUrl String?
+
+  // Co-Brokerage
+  allowCoBroke Boolean @default(true)
+  coBrokeSplit Decimal @default(50) // % to selling agent
+
+  // Status
+  status     PropertyStatus @default(DRAFT)
+  isFeatured Boolean        @default(false)
+  viewCount  Int            @default(0)
+
+  // AI/Search - pgvector embedding
+  embedding  Unsupported("vector(1536)")?
+  embeddedAt DateTime?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishedAt DateTime?
+
+  @@index([agentId])
+  @@index([status])
+  @@index([propertyType])
+  @@index([transactionType])
+  @@index([province, city])
+  @@index([price])
+}
+
+enum PropertyType {
+  HOUSE
+  CONDO
+  TOWNHOUSE
+  APARTMENT
+  LOT
+  COMMERCIAL
+  WAREHOUSE
+  FARM
+}
+
+enum TransactionType {
+  SALE
+  RENT
+}
+
+enum PropertyStatus {
+  DRAFT
+  AVAILABLE
+  RESERVED
+  SOLD
+  RENTED
+  UNLISTED
+}
+
+enum Furnishing {
+  UNFURNISHED
+  SEMI_FURNISHED
+  FULLY_FURNISHED
+}
