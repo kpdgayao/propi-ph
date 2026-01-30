@@ -41,7 +41,7 @@ export function PhotoUpload({
         }
 
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append("photos", file);
 
         const response = await fetch(`/api/listings/${listingId}/photos`, {
           method: "POST",
