@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
@@ -13,6 +13,23 @@ export const metadata: Metadata = {
   description:
     "AI-powered real estate co-brokerage platform for Philippine agents",
   keywords: ["real estate", "Philippines", "co-brokerage", "property listing"],
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Propi",
+  },
+  formatDetection: {
+    telephone: true,
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#0f172a",
 };
 
 export default function RootLayout({
