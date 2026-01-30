@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/auth";
+
+export const dynamic = "force-dynamic";
 import {
   Card,
   CardContent,

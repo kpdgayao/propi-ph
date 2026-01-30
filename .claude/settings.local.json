@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(git init:*)",
+      "Bash(git remote add:*)",
+      "Bash(git fetch:*)",
+      "Bash(pnpm create:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm approve-builds:*)",
+      "Bash(xargs:*)",
+      "Bash(pnpm rebuild:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(pnpm build:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial MVP setup: Next.js 15 + Prisma + Auth\n\n- Set up Next.js 15 with App Router and TypeScript\n- Added Prisma schema for Agent and Property models\n- Implemented JWT authentication \\(register/login/logout\\)\n- Created base UI components \\(shadcn/ui style\\)\n- Added auth pages and dashboard layout\n- Set up middleware for protected routes\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(npx prisma db push:*)",
+      "Bash(npx prisma db execute:*)",
+      "Bash(curl:*)",
+      "Bash(git commit:*)",
+      "Bash(pnpm run build:*)",
+      "Bash(pnpm update:*)",
+      "WebFetch(domain:docs.railway.com)",
+      "WebFetch(domain:nixpacks.com)",
+      "WebFetch(domain:station.railway.com)"
+    ]
+  }
+}

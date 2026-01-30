@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
+
+export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import {
