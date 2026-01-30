@@ -1,11 +1,6 @@
 "use client";
 
-export default function GlobalError({
-  reset,
-}: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) {
+export default function GlobalError() {
   return (
     <html lang="en">
       <body style={{ margin: 0, fontFamily: "system-ui, sans-serif" }}>
@@ -27,20 +22,20 @@ export default function GlobalError({
               Something went wrong
             </p>
             <div style={{ marginTop: "2rem" }}>
-              <button
-                onClick={reset}
+              <a
+                href="/"
                 style={{
+                  display: "inline-block",
                   padding: "0.5rem 1rem",
                   backgroundColor: "#2563eb",
                   color: "white",
-                  border: "none",
+                  textDecoration: "none",
                   borderRadius: "0.375rem",
                   fontSize: "1rem",
-                  cursor: "pointer",
                 }}
               >
-                Try again
-              </button>
+                Go home
+              </a>
             </div>
           </div>
         </div>
