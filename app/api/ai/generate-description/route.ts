@@ -3,23 +3,33 @@ import { requireAuth } from "@/lib/auth";
 import { generateListingDescription, PropertyDetails } from "@/lib/claude";
 import { z } from "zod";
 
+// Helper to coerce string/number to number
+const numericString = z.union([z.string(), z.number()]).transform((val) => {
+  const num = typeof val === "string" ? parseFloat(val) : val;
+  return isNaN(num) ? undefined : num;
+});
+
+const optionalNumeric = numericString.optional().transform((val) =>
+  val === undefined || val === null || (typeof val === 'number' && isNaN(val)) ? undefined : val
+);
+
 const requestSchema = z.object({
   propertyType: z.string().min(1),
   transactionType: z.string().min(1),
-  price: z.number().positive(),
+  price: numericString,
   province: z.string().min(1),
   city: z.string().min(1),
-  barangay: z.string().optional(),
-  bedrooms: z.number().int().min(0).optional(),
-  bathrooms: z.number().int().min(0).optional(),
-  carpark: z.number().int().min(0).optional(),
-  lotArea: z.number().positive().optional(),
-  floorArea: z.number().positive().optional(),
-  floors: z.number().int().min(1).optional(),
-  yearBuilt: z.number().int().optional(),
-  features: z.array(z.string()).optional(),
-  furnishing: z.string().optional(),
-  landmark: z.string().optional(),
+  barangay: z.string().optional().nullable(),
+  bedrooms: optionalNumeric,
+  bathrooms: optionalNumeric,
+  carpark: optionalNumeric,
+  lotArea: optionalNumeric,
+  floorArea: optionalNumeric,
+  floors: optionalNumeric,
+  yearBuilt: optionalNumeric,
+  features: z.array(z.string()).optional().nullable(),
+  furnishing: z.string().optional().nullable(),
+  landmark: z.string().optional().nullable(),
 });
 
 // POST /api/ai/generate-description
