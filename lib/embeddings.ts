@@ -1,11 +1,22 @@
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 // text-embedding-3-small produces 1536-dimensional vectors
 const EMBEDDING_MODEL = "text-embedding-3-small";
+
+// Lazy initialization to avoid build-time errors
+let openaiClient: OpenAI | null = null;
+
+function getOpenAIClient(): OpenAI {
+  if (!openaiClient) {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error("OPENAI_API_KEY environment variable is not set");
+    }
+    openaiClient = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  }
+  return openaiClient;
+}
 
 export interface PropertyEmbeddingInput {
   title: string;
@@ -79,8 +90,9 @@ export async function generatePropertyEmbedding(
   property: PropertyEmbeddingInput
 ): Promise<number[]> {
   const text = propertyToEmbeddingText(property);
+  const client = getOpenAIClient();
 
-  const response = await openai.embeddings.create({
+  const response = await client.embeddings.create({
     model: EMBEDDING_MODEL,
     input: text,
     dimensions: 1536,
@@ -93,7 +105,9 @@ export async function generatePropertyEmbedding(
  * Generate embedding for a search query
  */
 export async function generateQueryEmbedding(query: string): Promise<number[]> {
-  const response = await openai.embeddings.create({
+  const client = getOpenAIClient();
+
+  const response = await client.embeddings.create({
     model: EMBEDDING_MODEL,
     input: query.toLowerCase(),
     dimensions: 1536,
@@ -101,5 +115,3 @@ export async function generateQueryEmbedding(query: string): Promise<number[]> {
 
   return response.data[0].embedding;
 }
-
-export default openai;

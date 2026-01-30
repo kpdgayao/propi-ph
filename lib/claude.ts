@@ -1,8 +1,19 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+// Lazy initialization to avoid build-time errors
+let anthropicClient: Anthropic | null = null;
+
+function getAnthropicClient(): Anthropic {
+  if (!anthropicClient) {
+    if (!process.env.ANTHROPIC_API_KEY) {
+      throw new Error("ANTHROPIC_API_KEY environment variable is not set");
+    }
+    anthropicClient = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY,
+    });
+  }
+  return anthropicClient;
+}
 
 export interface PropertyDetails {
   propertyType: string;
@@ -98,7 +109,8 @@ Requirements:
 
 Return ONLY the description text, no titles, labels, or quotation marks.`;
 
-  const response = await anthropic.messages.create({
+  const client = getAnthropicClient();
+  const response = await client.messages.create({
     model: "claude-sonnet-4-5-20250514",
     max_tokens: 500,
     messages: [
@@ -116,5 +128,3 @@ Return ONLY the description text, no titles, labels, or quotation marks.`;
 
   throw new Error("Unexpected response format from Claude");
 }
-
-export default anthropic;
