@@ -1,9 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-
 export default function GlobalError({
-  error,
   reset,
 }: {
   error: Error & { digest?: string };
@@ -11,16 +8,39 @@ export default function GlobalError({
 }) {
   return (
     <html lang="en">
-      <body>
-        <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50">
-          <div className="text-center">
-            <h1 className="text-6xl font-bold text-gray-900">500</h1>
-            <p className="mt-4 text-xl text-gray-600">Something went wrong</p>
-            <p className="mt-2 text-gray-500">
-              {error.message || "An unexpected error occurred"}
+      <body style={{ margin: 0, fontFamily: "system-ui, sans-serif" }}>
+        <div
+          style={{
+            display: "flex",
+            minHeight: "100vh",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "#f9fafb",
+          }}
+        >
+          <div style={{ textAlign: "center" }}>
+            <h1 style={{ fontSize: "4rem", fontWeight: "bold", color: "#111827", margin: 0 }}>
+              500
+            </h1>
+            <p style={{ marginTop: "1rem", fontSize: "1.25rem", color: "#4b5563" }}>
+              Something went wrong
             </p>
-            <div className="mt-8">
-              <Button onClick={reset}>Try again</Button>
+            <div style={{ marginTop: "2rem" }}>
+              <button
+                onClick={reset}
+                style={{
+                  padding: "0.5rem 1rem",
+                  backgroundColor: "#2563eb",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "0.375rem",
+                  fontSize: "1rem",
+                  cursor: "pointer",
+                }}
+              >
+                Try again
+              </button>
             </div>
           </div>
         </div>
