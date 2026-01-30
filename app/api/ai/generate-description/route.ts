@@ -67,9 +67,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.error("Generate description error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorDetails = error instanceof Error ? error.stack : String(error);
+    console.error("Generate description error:", errorMessage, errorDetails);
+
     return NextResponse.json(
-      { error: "Failed to generate description. Please try again." },
+      {
+        error: "Failed to generate description. Please try again.",
+        details: process.env.NODE_ENV === "development" ? errorMessage : undefined
+      },
       { status: 500 }
     );
   }
