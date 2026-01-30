@@ -1,6 +1,6 @@
 [build]
 builder = "nixpacks"
-buildCommand = "rm -rf .next && pnpm run build"
+buildCommand = "pnpm run build"
 
 [build.env]
 NODE_ENV = "production"
