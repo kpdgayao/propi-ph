@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Sparkles, Loader2, RefreshCw } from "lucide-react";
 
 const PROPERTY_TYPES = [
   { value: "HOUSE", label: "House" },
@@ -102,6 +103,8 @@ export function ListingForm({ initialData, mode = "create" }: ListingFormProps) 
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>(
     initialData?.features || []
   );
@@ -185,6 +188,60 @@ export function ListingForm({ initialData, mode = "create" }: ListingFormProps) 
 
   const formatPrice = (value: number) => {
     return new Intl.NumberFormat("en-PH").format(value);
+  };
+
+  const generateDescription = async () => {
+    setIsGeneratingAI(true);
+    setAiError(null);
+
+    try {
+      // Validate minimum required fields
+      if (!watchedValues.propertyType || !watchedValues.transactionType || !watchedValues.price) {
+        setAiError("Please fill in property type, transaction type, and price first.");
+        return;
+      }
+
+      if (!watchedValues.province || !watchedValues.city) {
+        setAiError("Please fill in the location (province and city) first.");
+        return;
+      }
+
+      const response = await fetch("/api/ai/generate-description", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          propertyType: watchedValues.propertyType,
+          transactionType: watchedValues.transactionType,
+          price: watchedValues.price,
+          province: watchedValues.province,
+          city: watchedValues.city,
+          barangay: watchedValues.barangay,
+          bedrooms: watchedValues.bedrooms,
+          bathrooms: watchedValues.bathrooms,
+          carpark: watchedValues.carpark,
+          lotArea: watchedValues.lotArea,
+          floorArea: watchedValues.floorArea,
+          floors: watchedValues.floors,
+          yearBuilt: watchedValues.yearBuilt,
+          features: selectedFeatures,
+          furnishing: watchedValues.furnishing,
+          landmark: watchedValues.landmark,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to generate description");
+      }
+
+      const data = await response.json();
+      setValue("description", data.description);
+    } catch (error) {
+      console.error("AI generation error:", error);
+      setAiError(error instanceof Error ? error.message : "Failed to generate description");
+    } finally {
+      setIsGeneratingAI(false);
+    }
   };
 
   return (
@@ -554,20 +611,88 @@ export function ListingForm({ initialData, mode = "create" }: ListingFormProps) 
               <CardTitle>Property Description</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* AI Generate Section */}
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <h4 className="flex items-center gap-2 font-medium text-primary">
+                      <Sparkles className="h-4 w-4" />
+                      AI Description Generator
+                    </h4>
+                    <p className="mt-1 text-sm text-gray-600">
+                      Let AI create a compelling description based on your property details.
+                      You can edit it after generation.
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    {watchedValues.description && watchedValues.description.length > 0 ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={generateDescription}
+                        disabled={isGeneratingAI}
+                      >
+                        {isGeneratingAI ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <RefreshCw className="mr-2 h-4 w-4" />
+                            Regenerate
+                          </>
+                        )}
+                      </Button>
+                    ) : (
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={generateDescription}
+                        disabled={isGeneratingAI}
+                      >
+                        {isGeneratingAI ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="mr-2 h-4 w-4" />
+                            Generate with AI
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                {aiError && (
+                  <p className="mt-2 text-sm text-red-500">{aiError}</p>
+                )}
+              </div>
+
+              {/* Description Textarea */}
               <div className="space-y-2">
                 <Label htmlFor="description">Description *</Label>
                 <Textarea
                   id="description"
                   {...register("description")}
-                  placeholder="Describe the property in detail. Highlight key features, location advantages, and what makes this property special..."
+                  placeholder="Describe the property in detail. Highlight key features, location advantages, and what makes this property special... Or use the AI generator above!"
                   className="min-h-[200px]"
+                  disabled={isGeneratingAI}
                 />
                 {errors.description && (
                   <p className="text-sm text-red-500">{errors.description.message}</p>
                 )}
-                <p className="text-xs text-gray-500">
-                  Minimum 50 characters. Current: {watchedValues.description?.length || 0}
-                </p>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-gray-500">
+                    Minimum 50 characters. Current: {watchedValues.description?.length || 0}
+                  </p>
+                  {watchedValues.description && watchedValues.description.length >= 50 && (
+                    <p className="text-xs text-green-600">Looks good!</p>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
