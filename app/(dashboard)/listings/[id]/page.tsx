@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { ListingForm } from "@/components/listings/listing-form";
+import { PhotoUpload } from "@/components/listings/photo-upload";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 
@@ -115,24 +116,10 @@ export default async function EditListingPage({ params }: PageProps) {
       {/* Photo upload section */}
       <div className="rounded-lg border bg-white p-6">
         <h3 className="mb-4 font-medium">Photos</h3>
-        {listing.photos.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-4">
-            {listing.photos.map((photo, index) => (
-              <div key={index} className="relative aspect-video overflow-hidden rounded-lg bg-gray-100">
-                <img
-                  src={photo}
-                  alt={`Photo ${index + 1}`}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-gray-500">No photos uploaded yet.</p>
-        )}
-        <p className="mt-4 text-sm text-gray-500">
-          Photo upload UI coming soon. Use API directly for now.
-        </p>
+        <PhotoUpload
+          listingId={listing.id}
+          initialPhotos={listing.photos}
+        />
       </div>
 
       <ListingForm initialData={initialData} mode="edit" />
