@@ -110,7 +110,7 @@ Standard Philippine real estate: **5% total commission** on sale price
 
 | Service | Technology | Purpose |
 |---------|------------|---------|
-| LLM | Claude API (claude-sonnet-4-5-20250514) | Description generation, property matching |
+| LLM | Claude API (claude-sonnet-4-5-20250929) | Description generation, property matching |
 | Embeddings | OpenAI text-embedding-3-small | 1536 dimensions, semantic search |
 | Vector Search | pgvector | PostgreSQL extension |
 
@@ -124,7 +124,7 @@ Standard Philippine real estate: **5% total commission** on sale price
 | Maps | Google Maps API | Property locations, map view |
 | Payments | PayMongo | Future premium features |
 | Automation | n8n | Workflows (self-hosted on Railway) |
-| Storage | Cloudflare R2 or AWS S3 | Property photos |
+| Storage | Cloudflare R2 | Property photos |
 
 ### Development Tools
 
@@ -970,7 +970,7 @@ export async function matchProperties(
   
   // 3. Generate response with Claude
   const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-5-20250514',
+    model: 'claude-sonnet-4-5-20250929',
     max_tokens: 1024,
     system: `You are Propi, an AI property assistant for Northern Luzon real estate.
 
