@@ -55,7 +55,7 @@ export function PhotoUpload({
         }
 
         const data = await response.json();
-        return data.url;
+        return data.uploaded[0];
       });
 
       const newUrls = await Promise.all(uploadPromises);
