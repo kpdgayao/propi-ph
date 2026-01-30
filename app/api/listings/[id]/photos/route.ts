@@ -39,14 +39,33 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     // Parse multipart form data
     const formData = await request.formData();
-    const files = formData.getAll("photos") as File[];
+
+    // Debug: log all form data keys
+    const allKeys = Array.from(formData.keys());
+    console.log("Form data keys:", allKeys);
+
+    // Try both "photos" and "file" field names
+    let files = formData.getAll("photos") as File[];
+    if (!files || files.length === 0) {
+      files = formData.getAll("file") as File[];
+    }
+
+    // Also try getting a single file
+    if (!files || files.length === 0) {
+      const singleFile = formData.get("photos") || formData.get("file");
+      if (singleFile && singleFile instanceof File) {
+        files = [singleFile];
+      }
+    }
 
     if (!files || files.length === 0) {
       return NextResponse.json(
-        { error: "No files provided" },
+        { error: "No files provided", debug: { keys: allKeys } },
         { status: 400 }
       );
     }
+
+    console.log("Files received:", files.length, files.map(f => ({ name: f.name, type: f.type, size: f.size })));
 
     // Check total photo limit
     const currentCount = listing.photos.length;
@@ -85,8 +104,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         );
         uploadedUrls.push(result.url);
       } catch (uploadError) {
-        console.error(`Failed to upload ${file.name}:`, uploadError);
-        errors.push(`${file.name}: Upload failed.`);
+        const errorMessage = uploadError instanceof Error ? uploadError.message : String(uploadError);
+        console.error(`Failed to upload ${file.name}:`, errorMessage, uploadError);
+        errors.push(`${file.name}: Upload failed - ${errorMessage}`);
       }
     }
 

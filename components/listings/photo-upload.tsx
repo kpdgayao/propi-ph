@@ -50,7 +50,8 @@ export function PhotoUpload({
 
         if (!response.ok) {
           const data = await response.json();
-          throw new Error(data.error || "Upload failed");
+          console.error("Upload error response:", data);
+          throw new Error(data.error || data.details?.[0] || "Upload failed");
         }
 
         const data = await response.json();
