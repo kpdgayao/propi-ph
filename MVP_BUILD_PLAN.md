@@ -32,7 +32,7 @@
 
 | Layer | Choice | Notes |
 |-------|--------|-------|
-| Framework | Next.js 15 (App Router) | Server components + API routes |
+| Framework | Next.js 16.1.6 (App Router) | Server components + API routes |
 | Language | TypeScript | Strict mode |
 | Styling | Tailwind CSS + shadcn/ui | Fast, consistent UI |
 | Database | PostgreSQL + pgvector | Railway hosted |
@@ -52,11 +52,11 @@
 **Goal:** Project setup + database + basic auth working
 
 #### Day 1: Project Setup
-- [ ] Initialize Next.js 15 project with TypeScript
+- [x] Initialize Next.js project with TypeScript (upgraded to 16.1.6)
   ```bash
   pnpm create next-app@latest propi --typescript --tailwind --eslint --app --src-dir=false
   ```
-- [ ] Install core dependencies
+- [x] Install core dependencies
   ```bash
   pnpm add prisma @prisma/client
   pnpm add jose bcryptjs
@@ -64,37 +64,37 @@
   pnpm add @anthropic-ai/sdk openai
   pnpm add -D @types/bcryptjs
   ```
-- [ ] Set up shadcn/ui
+- [x] Set up shadcn/ui
   ```bash
   pnpm dlx shadcn@latest init
   pnpm dlx shadcn@latest add button input label card form toast
   ```
-- [ ] Create folder structure
-- [ ] Set up environment variables
+- [x] Create folder structure
+- [x] Set up environment variables
 
 #### Day 2: Database Schema
-- [ ] Create Prisma schema (simplified for MVP)
+- [x] Create Prisma schema (simplified for MVP)
   - Agent model (auth + profile)
   - Property model (listings)
   - Skip: Inquiry, Viewing, Deal, Activity models
-- [ ] Set up Railway PostgreSQL
-- [ ] Enable pgvector extension
-- [ ] Run initial migration
-- [ ] Create seed script with sample data
+- [x] Set up Railway PostgreSQL
+- [x] Enable pgvector extension
+- [x] Run initial migration
+- [x] Create seed script with sample data
 
 #### Day 3: Authentication
-- [ ] `lib/db.ts` - Prisma client singleton
-- [ ] `lib/auth.ts` - JWT sign/verify utilities
-- [ ] `lib/password.ts` - bcrypt hash/verify
-- [ ] `POST /api/auth/register` - Agent registration
-- [ ] `POST /api/auth/login` - Login, set cookie
-- [ ] `POST /api/auth/logout` - Clear cookie
-- [ ] `GET /api/auth/me` - Get current agent
-- [ ] `middleware.ts` - Protected routes
-- [ ] Login page UI
-- [ ] Register page UI (with PRC license field)
+- [x] `lib/db.ts` - Prisma client singleton
+- [x] `lib/auth.ts` - JWT sign/verify utilities
+- [x] `lib/password.ts` - bcrypt hash/verify (in auth.ts)
+- [x] `POST /api/auth/register` - Agent registration
+- [x] `POST /api/auth/login` - Login, set cookie
+- [x] `POST /api/auth/logout` - Clear cookie
+- [x] `GET /api/auth/me` - Get current agent
+- [x] `middleware.ts` - Protected routes (note: deprecated in Next.js 16, rename to proxy.ts)
+- [x] Login page UI
+- [x] Register page UI (with PRC license field)
 
-**Phase 1 Deliverable:** Can register and login as an agent
+**Phase 1 Deliverable:** ✅ COMPLETE - Can register and login as an agent
 
 ---
 
@@ -522,11 +522,39 @@ Based on tester feedback, likely additions:
 
 ---
 
+## Deployment Notes
+
+### Railway Configuration (Updated January 2026)
+
+Railway has migrated from **Nixpacks** to **Railpack** as the default builder. The `railway.toml` configuration:
+
+```toml
+[build]
+builder = "railpack"
+buildCommand = "pnpm run build"
+
+[deploy]
+startCommand = "pnpm start"
+healthcheckPath = "/"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+```
+
+### Important Version Notes
+
+- **Next.js 16.1.6** is required due to `@next/swc` version alignment issues in 15.5.x
+- Next.js 15.5.11 references `@next/swc@15.5.11` which doesn't exist on npm (latest stable 15.5.x is 15.5.7)
+- The `middleware.ts` convention is deprecated in Next.js 16 - should be renamed to `proxy.ts`
+- Dashboard pages require `export const dynamic = "force-dynamic"` since they use `cookies()` from `next/headers`
+
+---
+
 ## Commands Reference
 
 ```bash
 # Development
-pnpm dev                     # Start dev server
+pnpm dev                     # Start dev server (uses Turbopack)
 pnpm build                   # Production build
 pnpm lint                    # Lint code
 
@@ -538,7 +566,7 @@ pnpm prisma studio           # Database GUI
 pnpm prisma db seed          # Seed data
 
 # Deployment
-railway up                   # Deploy to Railway
+git push                     # Auto-deploys to Railway via GitHub integration
 ```
 
 ---

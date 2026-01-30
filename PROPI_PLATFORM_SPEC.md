@@ -98,7 +98,7 @@ Standard Philippine real estate: **5% total commission** on sale price
 
 | Layer | Technology | Notes |
 |-------|------------|-------|
-| Framework | Next.js 15 (App Router) | Server components, API routes |
+| Framework | Next.js 16.1.6 (App Router) | Server components, API routes |
 | Language | TypeScript (strict mode) | Full type safety |
 | Styling | Tailwind CSS | Utility-first |
 | UI Components | shadcn/ui + Radix UI | Accessible, customizable |
@@ -1304,13 +1304,13 @@ NODE_ENV="development"
 
 ## Deployment
 
-### Railway Setup
+### Railway Setup (Updated January 2026)
+
+Railway now uses **Railpack** as the default builder (Nixpacks is deprecated).
 
 1. **Create Railway Project**
-   ```bash
-   railway login
-   railway init
-   ```
+   - Connect GitHub repository for automatic deployments
+   - Railway auto-detects Next.js and configures Railpack
 
 2. **Add PostgreSQL with pgvector**
    - Use Railway's PostgreSQL template
@@ -1323,10 +1323,23 @@ NODE_ENV="development"
    - Add all variables from `.env.example`
    - Railway auto-injects `DATABASE_URL`
 
-4. **Deploy**
-   ```bash
-   railway up
+4. **Configuration (`railway.toml`)**
+   ```toml
+   [build]
+   builder = "railpack"
+   buildCommand = "pnpm run build"
+
+   [deploy]
+   startCommand = "pnpm start"
+   healthcheckPath = "/"
+   healthcheckTimeout = 300
+   restartPolicyType = "ON_FAILURE"
+   restartPolicyMaxRetries = 10
    ```
+
+5. **Deploy**
+   - Push to GitHub (auto-deploys via integration)
+   - Or manually: `railway up`
 
 ### Railway Services
 
@@ -1453,13 +1466,14 @@ export async function POST(request: NextRequest) {
 
 ## References
 
-- [Next.js 15 Docs](https://nextjs.org/docs)
+- [Next.js 16 Docs](https://nextjs.org/docs)
 - [Prisma Docs](https://www.prisma.io/docs)
 - [pgvector](https://github.com/pgvector/pgvector)
 - [shadcn/ui](https://ui.shadcn.com)
 - [Claude API](https://docs.anthropic.com)
 - [OpenAI Embeddings](https://platform.openai.com/docs/guides/embeddings)
-- [Railway Docs](https://docs.railway.app)
+- [Railway Docs](https://docs.railway.com)
+- [Railpack Docs](https://railpack.com)
 - [Mailjet API](https://dev.mailjet.com)
 - [Semaphore SMS](https://semaphore.co/docs)
 - [PayMongo API](https://developers.paymongo.com)
@@ -1478,4 +1492,4 @@ export async function POST(request: NextRequest) {
 
 ---
 
-*Last updated: January 2026*
+*Last updated: January 30, 2026*
