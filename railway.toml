@@ -1,8 +1,10 @@
 [build]
 builder = "nixpacks"
+buildCommand = "rm -rf .next && pnpm run build"
 
 [build.env]
 NODE_ENV = "production"
+NEXT_TELEMETRY_DISABLED = "1"
 
 [deploy]
 startCommand = "pnpm start"
