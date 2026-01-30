@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth";
+import { updatePropertyEmbedding } from "@/lib/vector-search";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -22,6 +23,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         description: true,
         photos: true,
         price: true,
+        propertyType: true,
+        transactionType: true,
+        province: true,
+        city: true,
+        barangay: true,
+        bedrooms: true,
+        bathrooms: true,
+        features: true,
       },
     });
 
@@ -69,6 +78,22 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         status: "AVAILABLE",
         publishedAt: new Date(),
       },
+    });
+
+    // Generate embedding for semantic search (fire and forget)
+    updatePropertyEmbedding(id, {
+      title: existing.title!,
+      description: existing.description!,
+      propertyType: existing.propertyType,
+      transactionType: existing.transactionType,
+      province: existing.province,
+      city: existing.city,
+      barangay: existing.barangay,
+      bedrooms: existing.bedrooms,
+      bathrooms: existing.bathrooms,
+      features: existing.features,
+    }).catch((err) => {
+      console.error("Failed to generate embedding for listing:", id, err);
     });
 
     return NextResponse.json({

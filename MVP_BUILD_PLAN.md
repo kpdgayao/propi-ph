@@ -103,39 +103,39 @@
 **Goal:** Agent can create, view, edit listings with photos
 
 #### Day 4: Listing API
-- [ ] `POST /api/listings` - Create listing
-- [ ] `GET /api/listings` - List my listings
-- [ ] `GET /api/listings/[id]` - Get single listing
-- [ ] `PATCH /api/listings/[id]` - Update listing
-- [ ] `DELETE /api/listings/[id]` - Delete listing
-- [ ] Zod validation schemas
+- [x] `POST /api/listings` - Create listing
+- [x] `GET /api/listings` - List my listings
+- [x] `GET /api/listings/[id]` - Get single listing
+- [x] `PATCH /api/listings/[id]` - Update listing
+- [x] `DELETE /api/listings/[id]` - Delete listing
+- [x] Zod validation schemas
 
 #### Day 5: Photo Upload
-- [ ] Set up Cloudflare R2 bucket
-- [ ] `lib/storage.ts` - R2 upload utilities
-- [ ] `POST /api/listings/[id]/photos` - Upload photos
-- [ ] `DELETE /api/listings/[id]/photos` - Delete photo
-- [ ] Photo upload component with preview
+- [x] Set up Cloudflare R2 bucket
+- [x] `lib/storage.ts` - R2 upload utilities
+- [x] `POST /api/listings/[id]/photos` - Upload photos
+- [x] `DELETE /api/listings/[id]/photos` - Delete photo
+- [x] Photo upload component with preview
 
 #### Day 6: Create Listing UI
-- [ ] Multi-step listing form
+- [x] Multi-step listing form
   - Step 1: Basic info (type, transaction, price)
   - Step 2: Location (province, city, barangay)
   - Step 3: Specs (beds, baths, area)
   - Step 4: Features & amenities
   - Step 5: Photos
   - Step 6: Review & publish
-- [ ] Form validation with Zod + react-hook-form
+- [x] Form validation with Zod + react-hook-form
 
 #### Day 7: My Listings UI
-- [ ] Listings grid/list view
-- [ ] Listing card component
-- [ ] Status badges (Draft, Available, etc.)
-- [ ] Edit listing page
-- [ ] Delete confirmation
-- [ ] Publish/Unlist actions
+- [x] Listings grid/list view
+- [x] Listing card component
+- [x] Status badges (Draft, Available, etc.)
+- [x] Edit listing page
+- [x] Delete confirmation
+- [x] Publish/Unlist actions
 
-**Phase 2 Deliverable:** Agent can create and manage their listings
+**Phase 2 Deliverable:** ✅ COMPLETE - Agent can create and manage their listings
 
 ---
 
@@ -144,19 +144,19 @@
 **Goal:** AI generates compelling listing descriptions
 
 #### Day 8: Claude Integration
-- [ ] `lib/claude.ts` - Anthropic client setup
-- [ ] `POST /api/ai/generate-description` - Generate endpoint
-- [ ] Prompt engineering for Filipino real estate context
-- [ ] Handle streaming response (optional)
+- [x] `lib/claude.ts` - Anthropic client setup
+- [x] `POST /api/ai/generate-description` - Generate endpoint
+- [x] Prompt engineering for Filipino real estate context
+- [ ] Handle streaming response (optional - deferred)
 
 #### Day 9: UI Integration
-- [ ] "Generate with AI" button in listing form
-- [ ] Loading state during generation
-- [ ] Preview generated description
-- [ ] Allow editing before saving
-- [ ] Regenerate option
+- [x] "Generate with AI" button in listing form
+- [x] Loading state during generation
+- [x] Preview generated description
+- [x] Allow editing before saving
+- [x] Regenerate option
 
-**Phase 3 Deliverable:** AI can generate listing descriptions from property details
+**Phase 3 Deliverable:** ✅ COMPLETE - AI can generate listing descriptions from property details
 
 ---
 
@@ -165,32 +165,34 @@
 **Goal:** Agent can find properties for co-brokerage
 
 #### Day 10: Basic Property Search
-- [ ] `GET /api/properties` - Public listings endpoint
-- [ ] Filter parameters:
+- [x] `GET /api/properties` - Public listings endpoint
+- [x] Filter parameters:
   - propertyType
   - transactionType
   - priceMin/priceMax
   - province/city
   - bedrooms/bathrooms
-- [ ] Pagination
+- [x] Pagination
 
 #### Day 11: Embeddings Setup
-- [ ] `lib/embeddings.ts` - OpenAI embeddings client
-- [ ] `lib/vector-search.ts` - pgvector queries
-- [ ] Generate embedding on listing publish
-- [ ] Script to backfill embeddings for existing listings
+- [x] `lib/embeddings.ts` - OpenAI embeddings client
+- [x] `lib/vector-search.ts` - pgvector queries
+- [x] Generate embedding on listing publish
+- [ ] Script to backfill embeddings for existing listings (deferred - no existing listings yet)
 
 #### Day 12: Semantic Search
-- [ ] `GET /api/search?q={query}` - Semantic search endpoint
-- [ ] Combine vector similarity with filters
-- [ ] Return relevance scores
+- [x] `GET /api/search?q={query}` - Semantic search endpoint
+- [x] Combine vector similarity with filters
+- [x] Return relevance scores
+- [x] `GET /api/properties/[id]/similar` - Similar properties endpoint
 
 #### Day 13: Discover Page UI
-- [ ] Search bar with natural language support
-- [ ] Filter sidebar/drawer
-- [ ] Property grid with cards
-- [ ] Sort options (newest, price, relevance)
-- [ ] Empty states
+- [x] Search bar with natural language support
+- [x] Filter sidebar/drawer
+- [x] Property grid with cards
+- [x] Sort options (newest, price, relevance)
+- [x] Empty states
+- [x] Public property detail page (`/properties/[id]`)
 
 #### Day 14: Map View
 - [ ] Set up Google Maps API
@@ -199,7 +201,7 @@
 - [ ] Info windows on click
 - [ ] Map/List view toggle
 
-**Phase 4 Deliverable:** Agent can search and discover co-broke listings
+**Phase 4 Deliverable:** ✅ MOSTLY COMPLETE - Agent can search and discover co-broke listings (Map view deferred to Phase 5)
 
 ---
 
@@ -208,13 +210,13 @@
 **Goal:** Complete the user loop, polish for testing
 
 #### Day 15: Property Detail Page
-- [ ] `/discover/[id]` - Property detail page
-- [ ] Photo gallery/carousel
-- [ ] Property specs display
-- [ ] Location map
-- [ ] Agent info card
-- [ ] Co-broke split display
-- [ ] Contact agent CTA (basic - just shows phone/email)
+- [x] `/properties/[id]` - Property detail page (moved from discover)
+- [x] Photo gallery (basic grid)
+- [x] Property specs display
+- [ ] Location map (from deferred Phase 4)
+- [x] Agent info card
+- [x] Co-broke split display
+- [x] Contact agent CTA (phone/email)
 
 #### Day 16: Dashboard & Navigation
 - [ ] Agent dashboard home
