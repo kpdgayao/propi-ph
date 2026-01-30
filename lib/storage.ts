@@ -4,18 +4,30 @@ import {
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 
-// Cloudflare R2 uses S3-compatible API
-const s3Client = new S3Client({
-  region: "auto",
-  endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || "",
-  },
-});
+// Lazy initialization to avoid build-time errors
+let s3ClientInstance: S3Client | null = null;
 
-const BUCKET_NAME = process.env.R2_BUCKET_NAME || "propi-uploads";
-const PUBLIC_URL = process.env.R2_PUBLIC_URL || "";
+function getS3Client(): S3Client {
+  if (!s3ClientInstance) {
+    s3ClientInstance = new S3Client({
+      region: "auto",
+      endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+      credentials: {
+        accessKeyId: process.env.R2_ACCESS_KEY_ID || "",
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || "",
+      },
+    });
+  }
+  return s3ClientInstance;
+}
+
+function getBucketName(): string {
+  return process.env.R2_BUCKET_NAME || "propi-uploads";
+}
+
+function getPublicUrl(): string {
+  return process.env.R2_PUBLIC_URL || "";
+}
 
 export interface UploadResult {
   key: string;
@@ -36,9 +48,10 @@ export async function uploadFile(
   const sanitizedFilename = filename.replace(/[^a-zA-Z0-9.-]/g, "_");
   const key = `${folder}/${timestamp}-${sanitizedFilename}`;
 
-  await s3Client.send(
+  const client = getS3Client();
+  await client.send(
     new PutObjectCommand({
-      Bucket: BUCKET_NAME,
+      Bucket: getBucketName(),
       Key: key,
       Body: file,
       ContentType: contentType,
@@ -47,7 +60,7 @@ export async function uploadFile(
 
   return {
     key,
-    url: `${PUBLIC_URL}/${key}`,
+    url: `${getPublicUrl()}/${key}`,
   };
 }
 
@@ -55,9 +68,10 @@ export async function uploadFile(
  * Delete a file from R2
  */
 export async function deleteFile(key: string): Promise<void> {
-  await s3Client.send(
+  const client = getS3Client();
+  await client.send(
     new DeleteObjectCommand({
-      Bucket: BUCKET_NAME,
+      Bucket: getBucketName(),
       Key: key,
     })
   );
@@ -67,10 +81,11 @@ export async function deleteFile(key: string): Promise<void> {
  * Extract the key from a full R2 URL
  */
 export function getKeyFromUrl(url: string): string | null {
-  if (!PUBLIC_URL || !url.startsWith(PUBLIC_URL)) {
+  const publicUrl = getPublicUrl();
+  if (!publicUrl || !url.startsWith(publicUrl)) {
     return null;
   }
-  return url.replace(`${PUBLIC_URL}/`, "");
+  return url.replace(`${publicUrl}/`, "");
 }
 
 /**
