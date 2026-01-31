@@ -28,6 +28,13 @@ export const dynamic = "force-dynamic";
 
 async function getHomePageData() {
   try {
+    // Debug: Check all property statuses
+    const statusCounts = await prisma.property.groupBy({
+      by: ['status'],
+      _count: { status: true },
+    });
+    console.log("Property status counts:", statusCounts);
+
     const [propertyCount, agentCount, properties, agents] = await Promise.all([
       prisma.property.count({ where: { status: "AVAILABLE" } }),
       prisma.agent.count({ where: { isActive: true } }),
@@ -86,6 +93,12 @@ async function getHomePageData() {
     };
   } catch (error) {
     console.error("Failed to fetch homepage data:", error);
+    // Log full error details
+    if (error instanceof Error) {
+      console.error("Error name:", error.name);
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+    }
     return {
       stats: { propertyCount: 0, agentCount: 0 },
       properties: [],
