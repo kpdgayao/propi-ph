@@ -16,9 +16,9 @@ export default async function AdminLayout({
   return (
     <div className="flex min-h-screen bg-gray-100">
       {session && <AdminSidebar role={session.role} />}
-      <div className={`flex flex-1 flex-col ${session ? "ml-64" : ""}`}>
+      <div className={`flex flex-1 flex-col ${session ? "lg:ml-64" : ""}`}>
         {session && <AdminHeader admin={session} />}
-        <main className={`flex-1 ${session ? "p-6" : ""}`}>{children}</main>
+        <main className={`flex-1 ${session ? "p-4 lg:p-6" : ""}`}>{children}</main>
       </div>
     </div>
   );

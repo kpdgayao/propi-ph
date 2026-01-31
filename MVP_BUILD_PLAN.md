@@ -18,13 +18,15 @@
 - [x] Property detail page with co-broke info
 
 ### Out of Scope (v0.2+)
-- ❌ CRM/Inquiries pipeline
 - ❌ Viewings/Calendar
 - ❌ Deals/Commissions
 - ❌ AI chat assistant
-- ❌ Admin dashboard
-- ❌ Public buyer portal
 - ❌ Email/SMS notifications
+
+### Completed Post-MVP (v0.2)
+- ✅ CRM/Inquiries pipeline (Phase 7)
+- ✅ Admin dashboard (Phase 9)
+- ✅ Public buyer portal (Phase 8)
 
 ---
 

@@ -32,9 +32,9 @@ app/
     admin/         # Admin APIs (auth, agents, listings, stats)
     users/         # Public user APIs (auth, favorites, saved-searches)
 components/
-  ui/              # shadcn/ui components
-  admin/           # Admin dashboard components
-  listings/        # Listing-related components
+  ui/              # shadcn/ui components (Button, Card, Dialog, Badge, Avatar, Sheet, AlertDialog, etc.)
+  admin/           # Admin dashboard components (sidebar, header, management tables)
+  listings/        # Listing-related components (photo gallery with lightbox)
   leads/           # Lead/inquiry components
   messages/        # Messaging components
   analytics/       # Analytics dashboard components
@@ -130,6 +130,12 @@ pnpm prisma:push      # Push schema changes
   - Platform analytics dashboard
   - Agent management (verify, suspend, reactivate)
   - Listing moderation (feature, flag, take down)
+- Phase 9.5: UI/UX Polish
+  - Admin mobile responsiveness (collapsible sidebar with hamburger menu)
+  - Confirmation dialogs for destructive admin actions (AlertDialog component)
+  - Design system components (Badge, Avatar, Sheet)
+  - Photo gallery with lightbox (keyboard navigation, thumbnail strip)
+  - Image optimization foundation (OptimizedImage, PropertyThumbnail components)
 
 ## Database Models
 

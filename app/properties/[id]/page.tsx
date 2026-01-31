@@ -12,6 +12,7 @@ import { PropertyShare } from "@/components/shared/property-share";
 import { FavoriteButton } from "@/components/shared/favorite-button";
 import { BrandLogo } from "@/components/layout/brand-logo";
 import { Footer } from "@/components/layout/footer";
+import { PhotoGallery } from "@/components/listings/photo-gallery";
 import {
   Bed,
   Bath,
@@ -169,39 +170,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           {/* Main Content */}
           <div className="space-y-6 lg:col-span-2">
             {/* Photos */}
-            {property.photos.length > 0 && (
-              <div className="overflow-hidden rounded-lg bg-gray-100">
-                <div className="grid gap-2">
-                  {/* Main photo */}
-                  <div className="aspect-[16/9] overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={property.photos[0]}
-                      alt={property.title}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  {/* Thumbnail grid */}
-                  {property.photos.length > 1 && (
-                    <div className="grid grid-cols-4 gap-2">
-                      {property.photos.slice(1, 5).map((photo, index) => (
-                        <div
-                          key={index}
-                          className="aspect-square overflow-hidden rounded-md"
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={photo}
-                            alt={`${property.title} ${index + 2}`}
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+            <PhotoGallery photos={property.photos} title={property.title} />
 
             {/* Title and Price */}
             <div className="space-y-2">
