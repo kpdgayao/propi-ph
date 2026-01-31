@@ -92,7 +92,7 @@ export default async function HomePage() {
                 </Button>
               </Link>
               <Link href="/login">
-                <Button size="lg" variant="outline" className="w-full border-white/30 text-white hover:bg-white/10 sm:w-auto">
+                <Button size="lg" variant="outline" className="w-full border-white/30 bg-transparent text-white hover:bg-white/10 sm:w-auto">
                   Agent Login
                 </Button>
               </Link>
@@ -319,7 +319,7 @@ export default async function HomePage() {
               </Button>
             </Link>
             <a href={`tel:${contact.phone}`}>
-              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10">
+              <Button size="lg" variant="outline" className="border-white/30 bg-transparent text-white hover:bg-white/10">
                 <Phone className="mr-2 h-5 w-5" />
                 Contact Us
               </Button>
