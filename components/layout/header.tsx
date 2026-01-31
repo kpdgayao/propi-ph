@@ -12,7 +12,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, LogOut, Settings, ChevronDown, Plus } from "lucide-react";
+import { useUnreadCount, UnreadBadge } from "@/components/layout/unread-badge";
+import {
+  User,
+  LogOut,
+  Settings,
+  ChevronDown,
+  Plus,
+  MessageSquare,
+} from "lucide-react";
 
 interface HeaderProps {
   user: {
@@ -25,11 +33,14 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/listings", label: "My Listings" },
   { href: "/discover", label: "Discover" },
+  { href: "/leads", label: "Leads" },
+  { href: "/analytics", label: "Analytics" },
 ];
 
 export function Header({ user }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const unreadCount = useUnreadCount();
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -71,6 +82,25 @@ export function Header({ user }: HeaderProps) {
 
         {/* Actions */}
         <div className="flex items-center gap-3">
+          {/* Messages with Badge */}
+          <Link
+            href="/messages"
+            className={cn(
+              "relative hidden rounded-md p-2 transition-colors md:block",
+              pathname.startsWith("/messages")
+                ? "bg-primary/10 text-primary"
+                : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+            )}
+          >
+            <MessageSquare className="h-5 w-5" />
+            {unreadCount > 0 && (
+              <UnreadBadge
+                count={unreadCount}
+                className="absolute -right-1 -top-1"
+              />
+            )}
+          </Link>
+
           <Link href="/listings/new" className="hidden md:block">
             <Button size="sm">
               <Plus className="mr-2 h-4 w-4" />

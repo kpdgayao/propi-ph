@@ -25,13 +25,22 @@ model Agent {
   prcLicense      String   @unique
   photo           String?
   bio             String?  @db.Text
+  headline        String?
+  yearsExperience Int?
+  socialLinks     Json?
   areasServed     String[] // ["Baguio City", "La Trinidad", "Benguet"]
   specializations String[] // ["Residential", "Commercial", "Land"]
   defaultSplit    Decimal  @default(50) // Default co-broke split %
   isActive        Boolean  @default(true)
 
   // Relations
-  listings Property[]
+  listings          Property[]
+  receivedInquiries Inquiry[]      @relation("ReceivedInquiries")
+  sentInquiries     Inquiry[]      @relation("SentInquiries")
+  conversations1    Conversation[] @relation("Participant1")
+  conversations2    Conversation[] @relation("Participant2")
+  sentMessages      Message[]
+  propertyViews     PropertyView[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -99,6 +108,11 @@ model Property {
   embedding  Unsupported("vector(1536)")?
   embeddedAt DateTime?
 
+  // Relations
+  inquiries     Inquiry[]
+  conversations Conversation[]
+  views         PropertyView[]
+
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   publishedAt DateTime?
@@ -140,4 +154,92 @@ enum Furnishing {
   UNFURNISHED
   SEMI_FURNISHED
   FULLY_FURNISHED
+}
+
+// ============================================
+// INQUIRIES & LEADS
+// ============================================
+
+model Inquiry {
+  id               String        @id @default(cuid())
+  propertyId       String
+  property         Property      @relation(fields: [propertyId], references: [id])
+  agentId          String
+  agent            Agent         @relation("ReceivedInquiries", fields: [agentId], references: [id])
+  name             String
+  email            String
+  phone            String?
+  message          String        @db.Text
+  status           InquiryStatus @default(NEW)
+  notes            String?       @db.Text
+  inquiringAgentId String?
+  inquiringAgent   Agent?        @relation("SentInquiries", fields: [inquiringAgentId], references: [id])
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  contactedAt      DateTime?
+
+  @@index([propertyId])
+  @@index([agentId])
+  @@index([status])
+}
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  VIEWING_SCHEDULED
+  NEGOTIATING
+  CONVERTED
+  CLOSED
+}
+
+// ============================================
+// MESSAGING
+// ============================================
+
+model Conversation {
+  id             String    @id @default(cuid())
+  participant1Id String
+  participant1   Agent     @relation("Participant1", fields: [participant1Id], references: [id])
+  participant2Id String
+  participant2   Agent     @relation("Participant2", fields: [participant2Id], references: [id])
+  propertyId     String?
+  property       Property? @relation(fields: [propertyId], references: [id])
+  lastMessageAt  DateTime?
+  messages       Message[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([participant1Id, participant2Id, propertyId])
+  @@index([participant1Id])
+  @@index([participant2Id])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         Agent        @relation(fields: [senderId], references: [id])
+  content        String       @db.Text
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId])
+  @@index([createdAt])
+}
+
+// ============================================
+// ANALYTICS
+// ============================================
+
+model PropertyView {
+  id         String   @id @default(cuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  viewerId   String?
+  viewer     Agent?   @relation(fields: [viewerId], references: [id])
+  viewedAt   DateTime @default(now())
+  referrer   String?
+
+  @@index([propertyId, viewedAt])
 }

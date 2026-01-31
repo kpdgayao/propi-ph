@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { formatPrice, formatArea } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { InquiryForm } from "@/components/leads/inquiry-form";
+import { StartConversation } from "@/components/messages/start-conversation";
 import {
   Bed,
   Bath,
@@ -318,7 +320,10 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                 <CardTitle className="text-lg">Listed by</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center gap-4">
+                <Link
+                  href={`/agents/${property.agent.id}`}
+                  className="flex items-center gap-4 transition-opacity hover:opacity-80"
+                >
                   {property.agent.photo ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -337,7 +342,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                       PRC License: {property.agent.prcLicense}
                     </p>
                   </div>
-                </div>
+                </Link>
 
                 {property.agent.bio && (
                   <p className="text-sm text-gray-600 line-clamp-3">
@@ -371,6 +376,14 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                       Send Email
                     </a>
                   </Button>
+                  <div className="w-full">
+                    <StartConversation
+                      participantId={property.agent.id}
+                      participantName={property.agent.name}
+                      propertyId={property.id}
+                      propertyTitle={property.title}
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -407,6 +420,9 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                 )}
               </CardContent>
             </Card>
+
+            {/* Inquiry Form */}
+            <InquiryForm propertyId={property.id} propertyTitle={property.title} />
           </div>
         </div>
       </main>

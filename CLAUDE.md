@@ -23,12 +23,16 @@ Propi is an AI-powered real estate co-brokerage platform for the Philippines, st
 ```
 app/
   (auth)/          # Public auth pages (login, register)
-  (dashboard)/     # Protected agent pages (listings, discover, dashboard)
+  (dashboard)/     # Protected agent pages (listings, discover, dashboard, leads, messages, analytics, settings)
+  agents/[id]/     # Public agent profile pages
   api/             # API routes
 components/
   ui/              # shadcn/ui components
   listings/        # Listing-related components
-  shared/          # Common components (header, nav, skeletons)
+  leads/           # Lead/inquiry components
+  messages/        # Messaging components
+  analytics/       # Analytics dashboard components
+  layout/          # Header, mobile nav, unread badge
 lib/
   auth.ts          # JWT authentication
   db.ts            # Prisma client singleton
@@ -36,6 +40,7 @@ lib/
   embeddings.ts    # OpenAI embeddings (lazy init)
   storage.ts       # R2 file upload (lazy init)
   vector-search.ts # pgvector semantic search
+  validations.ts   # Zod schemas for all features
 prisma/
   schema.prisma    # Database schema
 ```
@@ -99,8 +104,21 @@ pnpm prisma:push      # Push schema changes
 - Phase 3: AI Features (description generation, embeddings)
 - Phase 4: Discovery & Search (semantic search, discover page)
 - Phase 5: Property Details & Polish (responsive nav, loading states, PWA basics)
+- Phase 6: Testing & Deploy (verification complete, live on Railway)
+- Phase 7: Agent Collaboration Features
+  - Agent Profiles (public profiles, settings page)
+  - Lead/Inquiry Management (inquiry form, leads dashboard, status tracking)
+  - Analytics Dashboard (stats, charts, top listings)
+  - Agent Messaging (conversations, real-time polling, unread badges)
 
-**Current:** Phase 6 - Testing & Deploy (verification complete, live on Railway)
+## Database Models
+
+- **Agent** - Real estate agents with profiles, credentials, social links
+- **Property** - Listings with photos, specs, AI descriptions, embeddings
+- **Inquiry** - Leads from property inquiries (status: NEW → CONTACTED → VIEWING_SCHEDULED → NEGOTIATING → CONVERTED/CLOSED)
+- **Conversation** - Agent-to-agent messaging threads (optionally linked to properties)
+- **Message** - Individual chat messages with read receipts
+- **PropertyView** - Analytics tracking for property views
 
 ## Notes
 

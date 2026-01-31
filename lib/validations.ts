@@ -113,9 +113,81 @@ export const updateProfileSchema = z.object({
     .optional(),
   photo: z.string().url().optional(),
   bio: z.string().max(1000).optional(),
+  headline: z.string().max(200).optional(),
+  yearsExperience: z.number().int().min(0).max(50).optional(),
+  socialLinks: z
+    .object({
+      facebook: z.string().url().optional().or(z.literal("")),
+      linkedin: z.string().url().optional().or(z.literal("")),
+      instagram: z.string().url().optional().or(z.literal("")),
+      website: z.string().url().optional().or(z.literal("")),
+    })
+    .optional(),
   areasServed: z.array(z.string()).optional(),
   specializations: z.array(z.string()).optional(),
   defaultSplit: z.number().min(0).max(100).optional(),
 });
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+
+// ============================================
+// INQUIRY VALIDATIONS
+// ============================================
+
+export const inquiryStatusEnum = z.enum([
+  "NEW",
+  "CONTACTED",
+  "VIEWING_SCHEDULED",
+  "NEGOTIATING",
+  "CONVERTED",
+  "CLOSED",
+]);
+
+export const createInquirySchema = z.object({
+  propertyId: z.string().min(1, "Property ID is required"),
+  name: z.string().min(2, "Name must be at least 2 characters").max(100),
+  email: z.string().email("Invalid email address"),
+  phone: z
+    .string()
+    .min(10, "Invalid phone number")
+    .max(15)
+    .regex(/^[0-9+\-\s()]+$/, "Invalid phone number format")
+    .optional()
+    .or(z.literal("")),
+  message: z
+    .string()
+    .min(10, "Message must be at least 10 characters")
+    .max(2000),
+});
+
+export const updateInquirySchema = z.object({
+  status: inquiryStatusEnum.optional(),
+  notes: z.string().max(5000).optional(),
+  contactedAt: z.string().datetime().optional(),
+});
+
+export type CreateInquiryInput = z.infer<typeof createInquirySchema>;
+export type UpdateInquiryInput = z.infer<typeof updateInquirySchema>;
+
+// ============================================
+// MESSAGE VALIDATIONS
+// ============================================
+
+export const createConversationSchema = z.object({
+  participantId: z.string().min(1, "Participant ID is required"),
+  propertyId: z.string().optional(),
+  initialMessage: z
+    .string()
+    .min(1, "Message cannot be empty")
+    .max(5000, "Message too long"),
+});
+
+export const sendMessageSchema = z.object({
+  content: z
+    .string()
+    .min(1, "Message cannot be empty")
+    .max(5000, "Message too long"),
+});
+
+export type CreateConversationInput = z.infer<typeof createConversationSchema>;
+export type SendMessageInput = z.infer<typeof sendMessageSchema>;
