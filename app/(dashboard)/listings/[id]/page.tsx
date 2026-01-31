@@ -4,7 +4,7 @@ import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { ListingForm } from "@/components/listings/listing-form";
 import { PhotoUpload } from "@/components/listings/photo-upload";
-import { Button } from "@/components/ui/button";
+import { ListingActions } from "@/components/listings/listing-actions";
 import { formatPrice } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -72,22 +72,7 @@ export default async function EditListingPage({ params }: PageProps) {
           </Link>
         </div>
 
-        <div className="flex items-center gap-2">
-          {listing.status === "DRAFT" && (
-            <form action={`/api/listings/${listing.id}/publish`} method="POST">
-              <Button type="submit" size="sm">
-                Publish
-              </Button>
-            </form>
-          )}
-          {(listing.status === "AVAILABLE" || listing.status === "RESERVED") && (
-            <form action={`/api/listings/${listing.id}/unlist`} method="POST">
-              <Button type="submit" variant="outline" size="sm">
-                Unlist
-              </Button>
-            </form>
-          )}
-        </div>
+        <ListingActions listingId={listing.id} status={listing.status} />
       </div>
 
       <div className="flex items-start justify-between">
@@ -131,18 +116,7 @@ export default async function EditListingPage({ params }: PageProps) {
           <p className="mb-4 text-sm text-red-600">
             Once you delete a listing, there is no going back.
           </p>
-          <form
-            action={async () => {
-              "use server";
-              await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/listings/${id}`, {
-                method: "DELETE",
-              });
-            }}
-          >
-            <Button type="submit" variant="outline" className="border-red-300 text-red-600 hover:bg-red-100">
-              Delete Listing
-            </Button>
-          </form>
+          <ListingActions listingId={listing.id} status={listing.status} showDelete />
         </div>
       )}
     </div>
