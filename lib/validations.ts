@@ -251,3 +251,38 @@ export type UserRegisterInput = z.infer<typeof userRegisterSchema>;
 export type UserLoginInput = z.infer<typeof userLoginSchema>;
 export type UpdateUserProfileInput = z.infer<typeof updateUserProfileSchema>;
 export type SavedSearchInput = z.infer<typeof savedSearchSchema>;
+
+// ============================================
+// ADMIN VALIDATIONS
+// ============================================
+
+export const adminRoleEnum = z.enum(["SUPER_ADMIN", "ADMIN", "MODERATOR"]);
+
+export const adminLoginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export const createAdminSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(12, "Admin password must be at least 12 characters"),
+  name: z.string().min(2, "Name must be at least 2 characters").max(100),
+  role: adminRoleEnum.default("MODERATOR"),
+});
+
+export const updateAgentStatusSchema = z.object({
+  isActive: z.boolean().optional(),
+  isVerified: z.boolean().optional(),
+});
+
+export const moderateListingSchema = z.object({
+  isFeatured: z.boolean().optional(),
+  isFlagged: z.boolean().optional(),
+  flagReason: z.string().max(500).optional(),
+  status: z.enum(["AVAILABLE", "UNLISTED"]).optional(),
+});
+
+export type AdminLoginInput = z.infer<typeof adminLoginSchema>;
+export type CreateAdminInput = z.infer<typeof createAdminSchema>;
+export type UpdateAgentStatusInput = z.infer<typeof updateAgentStatusSchema>;
+export type ModerateListingInput = z.infer<typeof moderateListingSchema>;

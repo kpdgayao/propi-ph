@@ -13,6 +13,35 @@ datasource db {
 }
 
 // ============================================
+// ADMINS
+// ============================================
+
+model Admin {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         AdminRole @default(MODERATOR)
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+
+  // Relations
+  verifiedAgents    Agent[]    @relation("VerifiedBy")
+  moderatedListings Property[] @relation("ModeratedBy")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+}
+
+enum AdminRole {
+  SUPER_ADMIN // Full access, can manage other admins
+  ADMIN       // Can manage agents, listings, users
+  MODERATOR   // Can moderate listings only
+}
+
+// ============================================
 // AGENTS & AUTHENTICATION
 // ============================================
 
@@ -33,6 +62,12 @@ model Agent {
   defaultSplit    Decimal  @default(50) // Default co-broke split %
   isActive        Boolean  @default(true)
 
+  // Verification (by admin)
+  isVerified   Boolean   @default(false)
+  verifiedAt   DateTime?
+  verifiedById String?
+  verifiedBy   Admin?    @relation("VerifiedBy", fields: [verifiedById], references: [id])
+
   // Relations
   listings          Property[]
   receivedInquiries Inquiry[]      @relation("ReceivedInquiries")
@@ -47,6 +82,7 @@ model Agent {
 
   @@index([email])
   @@index([prcLicense])
+  @@index([isVerified])
 }
 
 // ============================================
@@ -104,6 +140,13 @@ model Property {
   isFeatured Boolean        @default(false)
   viewCount  Int            @default(0)
 
+  // Moderation (by admin)
+  isFlagged      Boolean   @default(false)
+  flagReason     String?
+  moderatedAt    DateTime?
+  moderatedById  String?
+  moderatedBy    Admin?    @relation("ModeratedBy", fields: [moderatedById], references: [id])
+
   // AI/Search - pgvector embedding
   embedding  Unsupported("vector(1536)")?
   embeddedAt DateTime?
@@ -124,6 +167,8 @@ model Property {
   @@index([transactionType])
   @@index([province, city])
   @@index([price])
+  @@index([isFeatured])
+  @@index([isFlagged])
 }
 
 enum PropertyType {

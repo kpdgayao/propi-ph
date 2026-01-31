@@ -22,15 +22,18 @@ Propi is an AI-powered real estate co-brokerage platform for the Philippines, st
 
 ```
 app/
+  (admin)/         # Admin pages (login, dashboard, agents, listings management)
   (auth)/          # Agent auth pages (login, register)
   (dashboard)/     # Protected agent pages (listings, discover, dashboard, leads, messages, analytics, settings)
   (public)/        # Public user pages (user login/register, favorites, saved-searches)
   agents/[id]/     # Public agent profile pages
   properties/[id]/ # Public property detail pages
   api/             # API routes
+    admin/         # Admin APIs (auth, agents, listings, stats)
     users/         # Public user APIs (auth, favorites, saved-searches)
 components/
   ui/              # shadcn/ui components
+  admin/           # Admin dashboard components
   listings/        # Listing-related components
   leads/           # Lead/inquiry components
   messages/        # Messaging components
@@ -38,7 +41,7 @@ components/
   shared/          # Shared components (share buttons, favorite button, etc.)
   layout/          # Header, mobile nav, footer, brand logo
 lib/
-  auth.ts          # JWT authentication (agents + public users)
+  auth.ts          # JWT authentication (agents, users, admins)
   db.ts            # Prisma client singleton
   claude.ts        # Anthropic API client (lazy init)
   embeddings.ts    # OpenAI embeddings (lazy init)
@@ -121,11 +124,18 @@ pnpm prisma:push      # Push schema changes
   - Public user registration and login (buyers)
   - Favorites functionality (save/unsave properties)
   - Saved searches with email alert settings
+- Phase 9: Admin Dashboard & Moderation
+  - Admin authentication (separate from agents/users)
+  - Admin roles (SUPER_ADMIN, ADMIN, MODERATOR)
+  - Platform analytics dashboard
+  - Agent management (verify, suspend, reactivate)
+  - Listing moderation (feature, flag, take down)
 
 ## Database Models
 
-- **Agent** - Real estate agents with profiles, credentials, social links
-- **Property** - Listings with photos, specs, AI descriptions, embeddings
+- **Admin** - Platform administrators with roles (SUPER_ADMIN, ADMIN, MODERATOR)
+- **Agent** - Real estate agents with profiles, credentials, verification status
+- **Property** - Listings with photos, specs, AI descriptions, moderation flags
 - **Inquiry** - Leads from property inquiries (status: NEW → CONTACTED → VIEWING_SCHEDULED → NEGOTIATING → CONVERTED/CLOSED)
 - **Conversation** - Agent-to-agent messaging threads (optionally linked to properties)
 - **Message** - Individual chat messages with read receipts
