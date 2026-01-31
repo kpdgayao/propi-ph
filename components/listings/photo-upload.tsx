@@ -28,40 +28,35 @@ export function PhotoUpload({
     setIsUploading(true);
 
     try {
-      const uploadPromises = Array.from(files).map(async (file) => {
-        // Validate file type
-        const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic", "image/heif"];
+      const formData = new FormData();
+      const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic", "image/heif"];
+
+      // Validate all files first
+      for (const file of Array.from(files)) {
         if (!validTypes.includes(file.type.toLowerCase())) {
           throw new Error(`Invalid file type: ${file.name}. Use JPEG, PNG, WebP, or HEIC.`);
         }
-
-        // Validate file size (10MB)
         if (file.size > 10 * 1024 * 1024) {
           throw new Error(`File too large: ${file.name}. Max size is 10MB.`);
         }
-
-        const formData = new FormData();
         formData.append("photos", file);
+      }
 
-        const response = await fetch(`/api/listings/${listingId}/photos`, {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!response.ok) {
-          const data = await response.json();
-          console.error("Upload error response:", data);
-          throw new Error(data.error || data.details?.[0] || "Upload failed");
-        }
-
-        const data = await response.json();
-        return data.uploaded[0];
+      // Single request with all files
+      const response = await fetch(`/api/listings/${listingId}/photos`, {
+        method: "POST",
+        body: formData,
       });
 
-      const newUrls = await Promise.all(uploadPromises);
-      const updatedPhotos = [...photos, ...newUrls];
-      setPhotos(updatedPhotos);
-      onPhotosChange?.(updatedPhotos);
+      if (!response.ok) {
+        const data = await response.json();
+        console.error("Upload error response:", data);
+        throw new Error(data.error || data.details?.[0] || "Upload failed");
+      }
+
+      const data = await response.json();
+      setPhotos(data.photos);
+      onPhotosChange?.(data.photos);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
