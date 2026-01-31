@@ -16,16 +16,12 @@ async function getTopAgents() {
         photo: true,
         _count: {
           select: {
-            listings: {
-              where: { status: "AVAILABLE" },
-            },
+            listings: true,
           },
         },
       },
       orderBy: {
-        listings: {
-          _count: "desc",
-        },
+        createdAt: "desc",
       },
       take: 4,
     });

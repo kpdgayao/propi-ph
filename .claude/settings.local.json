@@ -48,7 +48,8 @@
       "Bash(pnpm dotenv:*)",
       "WebFetch(domain:www.facebook.com)",
       "Bash(git restore:*)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(timeout 15 pnpm start:*)"
     ]
   }
 }
