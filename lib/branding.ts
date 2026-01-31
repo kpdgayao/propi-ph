@@ -69,7 +69,7 @@ export interface BrandingConfig {
 // TOWERHOMES REALTY CONFIGURATION
 // ============================================
 // Co-branded configuration for TowerHomes Realty
-// Colors: Deep Navy Blue (#1e3a5f) with Gold (#c9a227) accents
+// Colors: Baguio Pine Green with warm accents
 
 export const brandingConfig: BrandingConfig = {
   mode: "co-branded",
@@ -77,7 +77,7 @@ export const brandingConfig: BrandingConfig = {
   client: {
     name: "TowerHomes Realty",
     shortName: "TowerHomes",
-    tagline: "Your Trusted Partner in Northern Luzon Real Estate",
+    tagline: "Your Home in the City of Pines",
     // logo: "/logos/towerhomes-logo.png", // Uncomment when logo is available
     logoHeight: 40,
   },
@@ -102,16 +102,16 @@ export const brandingConfig: BrandingConfig = {
     // instagram: "https://www.instagram.com/towerhomesrealty",
   },
 
-  // TowerHomes brand colors
-  // Primary: Deep Navy Blue - professional, trustworthy
-  // Accent: Gold - premium, success in real estate
+  // TowerHomes brand colors - Baguio Pine Green theme
+  // Primary: Pine Forest Green - nature, Baguio's pine trees
+  // Accent: Warm Amber - welcoming, home warmth
   colors: {
-    primary: "215 65% 25%", // Deep Navy Blue (#1e3a5f)
-    primaryForeground: "210 40% 98%", // White
-    secondary: "43 70% 47%", // Gold (#c9a227)
-    secondaryForeground: "222.2 47.4% 11.2%", // Dark text
-    accent: "43 70% 47%", // Gold accent
-    accentForeground: "222.2 47.4% 11.2%", // Dark text
+    primary: "152 45% 28%", // Pine Green (#2d5a3f)
+    primaryForeground: "0 0% 100%", // White
+    secondary: "35 80% 50%", // Warm Amber (#e6a020)
+    secondaryForeground: "0 0% 10%", // Dark text
+    accent: "35 80% 50%", // Warm Amber accent
+    accentForeground: "0 0% 10%", // Dark text
   },
 
   features: {

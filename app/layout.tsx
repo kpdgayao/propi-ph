@@ -43,13 +43,13 @@ export const metadata: Metadata = {
   },
 };
 
-// TowerHomes brand color - Deep Navy Blue
+// TowerHomes brand color - Baguio Pine Green
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#1e3a5f",
+  themeColor: "#2d5a3f",
 };
 
 export default function RootLayout({

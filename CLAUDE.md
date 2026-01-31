@@ -138,8 +138,8 @@ brandingConfig.client.name = "TowerHomes Realty"
 ```
 
 **Brand Colors (CSS variables in globals.css):**
-- Primary: Deep Navy Blue `hsl(215 65% 25%)` - #1e3a5f
-- Accent: Gold `hsl(43 70% 47%)` - #c9a227
+- Primary: Baguio Pine Green `hsl(152 45% 28%)` - #2d5a3f
+- Accent: Warm Amber `hsl(35 80% 50%)` - #e6a020
 
 **Key Components:**
 - `BrandLogo` - Configurable logo (image or text)
