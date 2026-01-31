@@ -90,16 +90,15 @@ export const brandingConfig: BrandingConfig = {
   },
 
   contact: {
-    email: "info@towerhomesrealty.com",
-    phone: "+63 917 123 4567",
-    address: "Session Road",
+    email: "towerhomesrealty.ph@gmail.com",
+    phone: "0919 003 2908",
+    address: "UG-02-CB GoshenLand Towers, Upper Gen. Luna Road",
     city: "Baguio City",
     province: "Benguet",
   },
 
   social: {
     facebook: "https://www.facebook.com/towerhomesrealty",
-    // instagram: "https://www.instagram.com/towerhomesrealty",
   },
 
   // TowerHomes brand colors - Baguio Pine Green theme
