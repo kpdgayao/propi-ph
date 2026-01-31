@@ -1,11 +1,15 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { formatPrice, formatArea } from "@/lib/utils";
+import { brandingConfig } from "@/lib/branding";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InquiryForm } from "@/components/leads/inquiry-form";
 import { StartConversation } from "@/components/messages/start-conversation";
+import { PropertyShare } from "@/components/shared/property-share";
+import { FavoriteButton } from "@/components/shared/favorite-button";
 import { BrandLogo } from "@/components/layout/brand-logo";
 import { Footer } from "@/components/layout/footer";
 import {
@@ -24,6 +28,70 @@ import {
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
+
+// Generate metadata for social sharing
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+
+  const property = await prisma.property.findUnique({
+    where: { id },
+    select: {
+      title: true,
+      description: true,
+      price: true,
+      transactionType: true,
+      city: true,
+      province: true,
+      photos: true,
+      bedrooms: true,
+      bathrooms: true,
+      propertyType: true,
+    },
+  });
+
+  if (!property) {
+    return {
+      title: "Property Not Found",
+    };
+  }
+
+  const priceText = formatPrice(Number(property.price));
+  const location = `${property.city}, ${property.province}`;
+  const transactionText = property.transactionType === "SALE" ? "For Sale" : "For Rent";
+
+  const title = `${property.title} - ${priceText} | ${brandingConfig.client.name}`;
+  const description = `${transactionText} in ${location}. ${property.bedrooms ? `${property.bedrooms} bed` : ""} ${property.bathrooms ? `${property.bathrooms} bath` : ""} ${property.propertyType.toLowerCase()}. ${property.description.slice(0, 150)}...`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      images: property.photos[0]
+        ? [
+            {
+              url: property.photos[0],
+              width: 1200,
+              height: 630,
+              alt: property.title,
+            },
+          ]
+        : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: property.photos[0] ? [property.photos[0]] : [],
+    },
+  };
+}
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -156,6 +224,14 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                     {property.barangay && `${property.barangay}, `}
                     {property.city}, {property.province}
                   </p>
+                </div>
+                <div className="flex gap-2">
+                  <FavoriteButton propertyId={property.id} />
+                  <PropertyShare
+                    propertyId={property.id}
+                    title={property.title}
+                    description={property.description.slice(0, 150)}
+                  />
                 </div>
               </div>
               <p className="text-3xl font-bold text-primary">

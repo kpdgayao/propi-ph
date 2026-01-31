@@ -22,25 +22,30 @@ Propi is an AI-powered real estate co-brokerage platform for the Philippines, st
 
 ```
 app/
-  (auth)/          # Public auth pages (login, register)
+  (auth)/          # Agent auth pages (login, register)
   (dashboard)/     # Protected agent pages (listings, discover, dashboard, leads, messages, analytics, settings)
+  (public)/        # Public user pages (user login/register, favorites, saved-searches)
   agents/[id]/     # Public agent profile pages
+  properties/[id]/ # Public property detail pages
   api/             # API routes
+    users/         # Public user APIs (auth, favorites, saved-searches)
 components/
   ui/              # shadcn/ui components
   listings/        # Listing-related components
   leads/           # Lead/inquiry components
   messages/        # Messaging components
   analytics/       # Analytics dashboard components
-  layout/          # Header, mobile nav, unread badge
+  shared/          # Shared components (share buttons, favorite button, etc.)
+  layout/          # Header, mobile nav, footer, brand logo
 lib/
-  auth.ts          # JWT authentication
+  auth.ts          # JWT authentication (agents + public users)
   db.ts            # Prisma client singleton
   claude.ts        # Anthropic API client (lazy init)
   embeddings.ts    # OpenAI embeddings (lazy init)
   storage.ts       # R2 file upload (lazy init)
   vector-search.ts # pgvector semantic search
   validations.ts   # Zod schemas for all features
+  branding.ts      # Configurable branding system
 prisma/
   schema.prisma    # Database schema
 ```
@@ -110,6 +115,12 @@ pnpm prisma:push      # Push schema changes
   - Lead/Inquiry Management (inquiry form, leads dashboard, status tracking)
   - Analytics Dashboard (stats, charts, top listings)
   - Agent Messaging (conversations, real-time polling, unread badges)
+- Phase 8: Public Users & Sharing
+  - Social Sharing (Facebook, Messenger, WhatsApp, Viber, X, copy link)
+  - OG meta tags for property and agent pages
+  - Public user registration and login (buyers)
+  - Favorites functionality (save/unsave properties)
+  - Saved searches with email alert settings
 
 ## Database Models
 
@@ -119,6 +130,9 @@ pnpm prisma:push      # Push schema changes
 - **Conversation** - Agent-to-agent messaging threads (optionally linked to properties)
 - **Message** - Individual chat messages with read receipts
 - **PropertyView** - Analytics tracking for property views
+- **User** - Public users (buyers) with preferences
+- **Favorite** - User's saved properties
+- **SavedSearch** - User's saved search criteria with alert settings
 
 ## Branding System
 

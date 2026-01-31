@@ -191,3 +191,63 @@ export const sendMessageSchema = z.object({
 
 export type CreateConversationInput = z.infer<typeof createConversationSchema>;
 export type SendMessageInput = z.infer<typeof sendMessageSchema>;
+
+// ============================================
+// USER (BUYER) VALIDATIONS
+// ============================================
+
+export const userRegisterSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(100, "Password too long"),
+  name: z.string().min(2, "Name must be at least 2 characters").max(100),
+  phone: z
+    .string()
+    .min(10, "Invalid phone number")
+    .max(15)
+    .regex(/^[0-9+\-\s()]+$/, "Invalid phone number format")
+    .optional()
+    .or(z.literal("")),
+});
+
+export const userLoginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export const updateUserProfileSchema = z.object({
+  name: z.string().min(2).max(100).optional(),
+  phone: z
+    .string()
+    .min(10)
+    .max(15)
+    .regex(/^[0-9+\-\s()]+$/)
+    .optional()
+    .or(z.literal("")),
+  preferredLocations: z.array(z.string()).optional(),
+  preferredTypes: z.array(propertyTypeEnum).optional(),
+  minBudget: z.number().positive().optional(),
+  maxBudget: z.number().positive().optional(),
+});
+
+export const savedSearchSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100),
+  query: z.object({
+    q: z.string().optional(),
+    type: propertyTypeEnum.optional(),
+    transaction: transactionTypeEnum.optional(),
+    location: z.string().optional(),
+    minPrice: z.number().optional(),
+    maxPrice: z.number().optional(),
+    beds: z.number().int().min(0).optional(),
+    baths: z.number().int().min(0).optional(),
+  }),
+  alertsOn: z.boolean().default(true),
+});
+
+export type UserRegisterInput = z.infer<typeof userRegisterSchema>;
+export type UserLoginInput = z.infer<typeof userLoginSchema>;
+export type UpdateUserProfileInput = z.infer<typeof updateUserProfileSchema>;
+export type SavedSearchInput = z.infer<typeof savedSearchSchema>;

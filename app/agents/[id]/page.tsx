@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { formatPrice } from "@/lib/utils";
+import { brandingConfig } from "@/lib/branding";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { StartConversation } from "@/components/messages/start-conversation";
@@ -21,6 +23,64 @@ import {
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
+
+// Generate metadata for social sharing
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+
+  const agent = await prisma.agent.findUnique({
+    where: { id, isActive: true },
+    select: {
+      name: true,
+      headline: true,
+      bio: true,
+      photo: true,
+      areasServed: true,
+      _count: { select: { listings: { where: { status: "AVAILABLE" } } } },
+    },
+  });
+
+  if (!agent) {
+    return {
+      title: "Agent Not Found",
+    };
+  }
+
+  const title = `${agent.name} - Real Estate Agent | ${brandingConfig.client.name}`;
+  const description = agent.headline
+    ? `${agent.headline}. ${agent.areasServed.length > 0 ? `Serving ${agent.areasServed.slice(0, 3).join(", ")}` : ""} - ${agent._count.listings} active listings.`
+    : `Licensed real estate agent with ${agent._count.listings} active listings.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "profile",
+      images: agent.photo
+        ? [
+            {
+              url: agent.photo,
+              width: 400,
+              height: 400,
+              alt: agent.name,
+            },
+          ]
+        : [],
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+      images: agent.photo ? [agent.photo] : [],
+    },
+  };
+}
 
 interface PageProps {
   params: Promise<{ id: string }>;
