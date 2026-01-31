@@ -282,7 +282,15 @@ export const moderateListingSchema = z.object({
   status: z.enum(["AVAILABLE", "UNLISTED"]).optional(),
 });
 
+export const updateAdminSchema = z.object({
+  name: z.string().min(2).max(100).optional(),
+  role: adminRoleEnum.optional(),
+  isActive: z.boolean().optional(),
+  password: z.string().min(12, "Admin password must be at least 12 characters").optional(),
+});
+
 export type AdminLoginInput = z.infer<typeof adminLoginSchema>;
 export type CreateAdminInput = z.infer<typeof createAdminSchema>;
+export type UpdateAdminInput = z.infer<typeof updateAdminSchema>;
 export type UpdateAgentStatusInput = z.infer<typeof updateAgentStatusSchema>;
 export type ModerateListingInput = z.infer<typeof moderateListingSchema>;
