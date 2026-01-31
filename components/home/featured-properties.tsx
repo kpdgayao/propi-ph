@@ -14,24 +14,29 @@ import {
 } from "lucide-react";
 
 async function getFeaturedProperties() {
-  return prisma.property.findMany({
-    where: { status: "AVAILABLE" },
-    select: {
-      id: true,
-      title: true,
-      price: true,
-      transactionType: true,
-      propertyType: true,
-      city: true,
-      province: true,
-      bedrooms: true,
-      bathrooms: true,
-      floorArea: true,
-      photos: true,
-    },
-    orderBy: { viewCount: "desc" },
-    take: 6,
-  });
+  try {
+    return await prisma.property.findMany({
+      where: { status: "AVAILABLE" },
+      select: {
+        id: true,
+        title: true,
+        price: true,
+        transactionType: true,
+        propertyType: true,
+        city: true,
+        province: true,
+        bedrooms: true,
+        bathrooms: true,
+        floorArea: true,
+        photos: true,
+      },
+      orderBy: { viewCount: "desc" },
+      take: 6,
+    });
+  } catch (error) {
+    console.error("Failed to fetch featured properties:", error);
+    return [];
+  }
 }
 
 export async function FeaturedProperties() {

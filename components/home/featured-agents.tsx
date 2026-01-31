@@ -5,31 +5,36 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, MapPin, Home } from "lucide-react";
 
 async function getTopAgents() {
-  const agents = await prisma.agent.findMany({
-    where: { isActive: true },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      phone: true,
-      photo: true,
-      _count: {
-        select: {
-          listings: {
-            where: { status: "AVAILABLE" },
+  try {
+    const agents = await prisma.agent.findMany({
+      where: { isActive: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        photo: true,
+        _count: {
+          select: {
+            listings: {
+              where: { status: "AVAILABLE" },
+            },
           },
         },
       },
-    },
-    orderBy: {
-      listings: {
-        _count: "desc",
+      orderBy: {
+        listings: {
+          _count: "desc",
+        },
       },
-    },
-    take: 4,
-  });
+      take: 4,
+    });
 
-  return agents;
+    return agents;
+  } catch (error) {
+    console.error("Failed to fetch top agents:", error);
+    return [];
+  }
 }
 
 export async function FeaturedAgents() {

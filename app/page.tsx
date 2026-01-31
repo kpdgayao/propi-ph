@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { FeaturedAgents } from "@/components/home/featured-agents";
 import { Testimonials } from "@/components/home/testimonials";
 import { TrustBadges } from "@/components/home/trust-badges";
 import { NewsletterSignup } from "@/components/home/newsletter-signup";
+import { Loader2 } from "lucide-react";
 import {
   MapPin,
   Shield,
@@ -26,12 +28,28 @@ import {
 
 export const dynamic = "force-dynamic";
 
+function LoadingSection({ title }: { title: string }) {
+  return (
+    <div className="py-16 flex items-center justify-center">
+      <div className="text-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+        <p className="mt-2 text-gray-500">{title}</p>
+      </div>
+    </div>
+  );
+}
+
 async function getStats() {
-  const [propertyCount, agentCount] = await Promise.all([
-    prisma.property.count({ where: { status: "AVAILABLE" } }),
-    prisma.agent.count({ where: { isActive: true } }),
-  ]);
-  return { propertyCount, agentCount };
+  try {
+    const [propertyCount, agentCount] = await Promise.all([
+      prisma.property.count({ where: { status: "AVAILABLE" } }),
+      prisma.agent.count({ where: { isActive: true } }),
+    ]);
+    return { propertyCount, agentCount };
+  } catch (error) {
+    console.error("Failed to fetch stats:", error);
+    return { propertyCount: 0, agentCount: 0 };
+  }
 }
 
 export default async function HomePage() {
@@ -108,7 +126,9 @@ export default async function HomePage() {
       <PropertyTypes />
 
       {/* Featured Properties */}
-      <FeaturedProperties />
+      <Suspense fallback={<LoadingSection title="Loading Properties..." />}>
+        <FeaturedProperties />
+      </Suspense>
 
       {/* Why Choose Us - Enhanced */}
       <section className="py-20 bg-white">
@@ -178,7 +198,9 @@ export default async function HomePage() {
 
       {/* Featured Agents */}
       <div className="bg-gray-50">
-        <FeaturedAgents />
+        <Suspense fallback={<LoadingSection title="Loading Agents..." />}>
+          <FeaturedAgents />
+        </Suspense>
       </div>
 
       {/* Testimonials */}
