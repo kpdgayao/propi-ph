@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Footer } from "@/components/layout/footer";
@@ -6,6 +7,8 @@ import { brandingConfig } from "@/lib/branding";
 import { HeroSearch } from "@/components/home/hero-search";
 import { StatsSection } from "@/components/home/stats-section";
 import { PropertyTypes } from "@/components/home/property-types";
+import { FeaturedProperties } from "@/components/home/featured-properties";
+import { FeaturedAgents } from "@/components/home/featured-agents";
 import { Testimonials } from "@/components/home/testimonials";
 import { TrustBadges } from "@/components/home/trust-badges";
 import { NewsletterSignup } from "@/components/home/newsletter-signup";
@@ -23,14 +26,76 @@ import {
 
 export const dynamic = "force-dynamic";
 
-async function getStats() {
-  // Return static values to avoid database issues during render
-  // Database calls moved to client-side or API routes
-  return { propertyCount: 10, agentCount: 5 };
+async function getHomePageData() {
+  try {
+    const [propertyCount, agentCount, properties, agents] = await Promise.all([
+      prisma.property.count({ where: { status: "AVAILABLE" } }),
+      prisma.agent.count({ where: { isActive: true } }),
+      prisma.property.findMany({
+        where: { status: "AVAILABLE" },
+        select: {
+          id: true,
+          title: true,
+          price: true,
+          transactionType: true,
+          propertyType: true,
+          city: true,
+          province: true,
+          bedrooms: true,
+          bathrooms: true,
+          floorArea: true,
+          photos: true,
+        },
+        orderBy: { viewCount: "desc" },
+        take: 6,
+      }),
+      prisma.agent.findMany({
+        where: { isActive: true },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          photo: true,
+          _count: {
+            select: {
+              listings: true,
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 4,
+      }),
+    ]);
+
+    return {
+      stats: { propertyCount, agentCount },
+      properties: properties.map((p) => ({
+        ...p,
+        price: p.price.toString(),
+        floorArea: p.floorArea?.toString() || null,
+      })),
+      agents: agents.map((a) => ({
+        id: a.id,
+        name: a.name,
+        email: a.email,
+        phone: a.phone,
+        photo: a.photo,
+        listingsCount: a._count.listings,
+      })),
+    };
+  } catch (error) {
+    console.error("Failed to fetch homepage data:", error);
+    return {
+      stats: { propertyCount: 0, agentCount: 0 },
+      properties: [],
+      agents: [],
+    };
+  }
 }
 
 export default async function HomePage() {
-  const stats = await getStats();
+  const { stats, properties, agents } = await getHomePageData();
   const { client, contact } = brandingConfig;
 
   return (
@@ -102,26 +167,30 @@ export default async function HomePage() {
       {/* Property Types Quick Navigation */}
       <PropertyTypes />
 
-      {/* Featured Properties - temporarily simplified */}
-      <section className="py-16 bg-gray-50">
-        <div className="mx-auto max-w-7xl px-4 text-center">
-          <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary text-sm font-medium rounded-full mb-4">
-            Featured
-          </span>
-          <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-            Top Properties
-          </h2>
-          <p className="mt-2 text-gray-600 mb-8">
-            Discover the best listings in Northern Luzon
-          </p>
-          <Link href="/discover">
-            <Button size="lg">
-              Browse All Properties
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
-        </div>
-      </section>
+      {/* Featured Properties */}
+      {properties.length > 0 ? (
+        <FeaturedProperties properties={properties} />
+      ) : (
+        <section className="py-16 bg-gray-50">
+          <div className="mx-auto max-w-7xl px-4 text-center">
+            <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary text-sm font-medium rounded-full mb-4">
+              Featured
+            </span>
+            <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
+              Top Properties
+            </h2>
+            <p className="mt-2 text-gray-600 mb-8">
+              Discover the best listings in Northern Luzon
+            </p>
+            <Link href="/discover">
+              <Button size="lg">
+                Browse All Properties
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* Why Choose Us - Enhanced */}
       <section className="py-20 bg-white">
@@ -189,26 +258,32 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Featured Agents - temporarily simplified */}
-      <section className="py-16 bg-gray-50">
-        <div className="mx-auto max-w-7xl px-4 text-center">
-          <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary text-sm font-medium rounded-full mb-4">
-            Our Team
-          </span>
-          <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-            Meet Our Agents
-          </h2>
-          <p className="mt-2 text-gray-600 mb-8">
-            Licensed professionals ready to help you
-          </p>
-          <Link href="/agents">
-            <Button size="lg" variant="outline">
-              View All Agents
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
+      {/* Featured Agents */}
+      {agents.length > 0 ? (
+        <div className="bg-gray-50">
+          <FeaturedAgents agents={agents} />
         </div>
-      </section>
+      ) : (
+        <section className="py-16 bg-gray-50">
+          <div className="mx-auto max-w-7xl px-4 text-center">
+            <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary text-sm font-medium rounded-full mb-4">
+              Our Team
+            </span>
+            <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
+              Meet Our Agents
+            </h2>
+            <p className="mt-2 text-gray-600 mb-8">
+              Licensed professionals ready to help you
+            </p>
+            <Link href="/agents">
+              <Button size="lg" variant="outline">
+                View All Agents
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* Testimonials */}
       <Testimonials />

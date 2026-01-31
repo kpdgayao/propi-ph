@@ -1,5 +1,6 @@
+"use client";
+
 import Link from "next/link";
-import { prisma } from "@/lib/db";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
@@ -13,35 +14,25 @@ import {
   Heart,
 } from "lucide-react";
 
-async function getFeaturedProperties() {
-  try {
-    return await prisma.property.findMany({
-      where: { status: "AVAILABLE" },
-      select: {
-        id: true,
-        title: true,
-        price: true,
-        transactionType: true,
-        propertyType: true,
-        city: true,
-        province: true,
-        bedrooms: true,
-        bathrooms: true,
-        floorArea: true,
-        photos: true,
-      },
-      orderBy: { viewCount: "desc" },
-      take: 6,
-    });
-  } catch (error) {
-    console.error("Failed to fetch featured properties:", error);
-    return [];
-  }
+interface Property {
+  id: string;
+  title: string;
+  price: string | number;
+  transactionType: string;
+  propertyType: string;
+  city: string;
+  province: string;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  floorArea: string | number | null;
+  photos: string[];
 }
 
-export async function FeaturedProperties() {
-  const properties = await getFeaturedProperties();
+interface FeaturedPropertiesProps {
+  properties: Property[];
+}
 
+export function FeaturedProperties({ properties }: FeaturedPropertiesProps) {
   if (properties.length === 0) return null;
 
   return (

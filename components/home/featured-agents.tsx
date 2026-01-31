@@ -1,41 +1,24 @@
+"use client";
+
 import Link from "next/link";
-import { prisma } from "@/lib/db";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MapPin, Home } from "lucide-react";
 
-async function getTopAgents() {
-  try {
-    const agents = await prisma.agent.findMany({
-      where: { isActive: true },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        photo: true,
-        _count: {
-          select: {
-            listings: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: 4,
-    });
-
-    return agents;
-  } catch (error) {
-    console.error("Failed to fetch top agents:", error);
-    return [];
-  }
+interface Agent {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  photo: string | null;
+  listingsCount: number;
 }
 
-export async function FeaturedAgents() {
-  const agents = await getTopAgents();
+interface FeaturedAgentsProps {
+  agents: Agent[];
+}
 
+export function FeaturedAgents({ agents }: FeaturedAgentsProps) {
   if (agents.length === 0) return null;
 
   const getInitials = (name: string) => {
@@ -99,7 +82,7 @@ export async function FeaturedAgents() {
 
                   <div className="mt-3 flex items-center justify-center gap-1 text-sm text-primary font-medium">
                     <Home className="h-4 w-4" />
-                    <span>{agent._count.listings} Active Listings</span>
+                    <span>{agent.listingsCount} Active Listings</span>
                   </div>
 
                   <Button
