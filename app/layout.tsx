@@ -2,34 +2,54 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { brandingConfig, getPoweredByText } from "@/lib/branding";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
 });
 
+const { client, platform } = brandingConfig;
+const poweredBy = getPoweredByText();
+const fullTitle = poweredBy
+  ? `${client.name} | ${poweredBy}`
+  : client.name;
+
 export const metadata: Metadata = {
-  title: "Propi - Real Estate Co-Brokerage Platform",
-  description:
-    "AI-powered real estate co-brokerage platform for Philippine agents",
-  keywords: ["real estate", "Philippines", "co-brokerage", "property listing"],
+  title: {
+    default: fullTitle,
+    template: `%s | ${client.name}`,
+  },
+  description: client.tagline,
+  keywords: [
+    "real estate",
+    "Philippines",
+    "co-brokerage",
+    "property listing",
+    client.name,
+    platform.name,
+    "Baguio",
+    "Benguet",
+    "Northern Luzon",
+  ],
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Propi",
+    title: client.shortName,
   },
   formatDetection: {
     telephone: true,
   },
 };
 
+// TowerHomes brand color - Deep Navy Blue
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#0f172a",
+  themeColor: "#1e3a5f",
 };
 
 export default function RootLayout({

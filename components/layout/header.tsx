@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useUnreadCount, UnreadBadge } from "@/components/layout/unread-badge";
+import { BrandLogo } from "@/components/layout/brand-logo";
 import {
   User,
   LogOut,
@@ -53,9 +54,7 @@ export function Header({ user }: HeaderProps) {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         {/* Logo and Nav */}
         <div className="flex items-center gap-8">
-          <Link href="/dashboard" className="text-xl font-bold text-primary">
-            Propi
-          </Link>
+          <BrandLogo href="/dashboard" size="md" />
           <nav className="hidden md:flex md:gap-1">
             {navItems.map((item) => {
               const isActive =

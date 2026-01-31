@@ -15,6 +15,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
+import { BrandHero } from "@/components/layout/brand-logo";
+import { DashboardFooter } from "@/components/layout/footer";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -61,14 +63,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-          <CardDescription>
-            Enter your credentials to access your account
-          </CardDescription>
-        </CardHeader>
+    <div className="flex min-h-screen flex-col bg-gray-50">
+      <div className="flex flex-1 items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md space-y-6">
+          <BrandHero />
+          <Card>
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-2xl font-bold">Agent Login</CardTitle>
+              <CardDescription>
+                Enter your credentials to access your dashboard
+              </CardDescription>
+            </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -111,7 +116,10 @@ export default function LoginPage() {
             </p>
           </CardFooter>
         </form>
-      </Card>
+          </Card>
+        </div>
+      </div>
+      <DashboardFooter />
     </div>
   );
 }

@@ -5,6 +5,8 @@ import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { StartConversation } from "@/components/messages/start-conversation";
+import { BrandLogo } from "@/components/layout/brand-logo";
+import { Footer } from "@/components/layout/footer";
 import {
   MapPin,
   Phone,
@@ -70,10 +72,11 @@ export default async function AgentProfilePage({ params }: PageProps) {
   const socialLinks = agent.socialLinks as Record<string, string> | null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="flex min-h-screen flex-col bg-gray-50">
       {/* Header */}
       <header className="border-b bg-white">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto flex items-center justify-between px-4 py-4">
+          <BrandLogo href="/discover" showPoweredBy size="sm" />
           <Link
             href="/discover"
             className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
@@ -84,7 +87,7 @@ export default async function AgentProfilePage({ params }: PageProps) {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto flex-1 px-4 py-8">
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Agent Info Sidebar */}
           <div className="space-y-6">
@@ -315,6 +318,8 @@ export default async function AgentProfilePage({ params }: PageProps) {
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

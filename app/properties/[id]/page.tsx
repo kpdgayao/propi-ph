@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InquiryForm } from "@/components/leads/inquiry-form";
 import { StartConversation } from "@/components/messages/start-conversation";
+import { BrandLogo } from "@/components/layout/brand-logo";
+import { Footer } from "@/components/layout/footer";
 import {
   Bed,
   Bath,
@@ -79,10 +81,11 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     .catch((err) => console.error("Failed to increment view count:", err));
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="flex min-h-screen flex-col bg-gray-50">
       {/* Header */}
       <header className="border-b bg-white">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto flex items-center justify-between px-4 py-4">
+          <BrandLogo href="/discover" showPoweredBy size="sm" />
           <Link
             href="/discover"
             className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
@@ -93,7 +96,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto flex-1 px-4 py-8">
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Main Content */}
           <div className="space-y-6 lg:col-span-2">
@@ -426,6 +429,8 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

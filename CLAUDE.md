@@ -120,6 +120,32 @@ pnpm prisma:push      # Push schema changes
 - **Message** - Individual chat messages with read receipts
 - **PropertyView** - Analytics tracking for property views
 
+## Branding System
+
+The platform supports configurable branding for white-label and co-branded deployments.
+
+**Configuration:** `lib/branding.ts`
+
+```typescript
+// Branding modes:
+// - "white-label": Client brand only (Propi invisible)
+// - "co-branded": "ClientName powered by Propi PH"
+// - "platform": Propi brand only
+
+// Current: TowerHomes Realty (co-branded)
+brandingConfig.mode = "co-branded"
+brandingConfig.client.name = "TowerHomes Realty"
+```
+
+**Brand Colors (CSS variables in globals.css):**
+- Primary: Deep Navy Blue `hsl(215 65% 25%)` - #1e3a5f
+- Accent: Gold `hsl(43 70% 47%)` - #c9a227
+
+**Key Components:**
+- `BrandLogo` - Configurable logo (image or text)
+- `BrandHero` - Full brand display for landing pages
+- `Footer` / `DashboardFooter` - With "Powered by" attribution
+
 ## Notes
 
 - The project uses `master` branch (not `main`)
