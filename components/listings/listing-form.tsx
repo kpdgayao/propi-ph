@@ -17,7 +17,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sparkles, Loader2, RefreshCw } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import { Sparkles, Loader2, RefreshCw, AlertCircle } from "lucide-react";
 
 const PROPERTY_TYPES = [
   { value: "HOUSE", label: "House" },
@@ -173,14 +174,55 @@ export function ListingForm({ initialData, mode = "create" }: ListingFormProps) 
       }
 
       const result = await response.json();
+
+      toast({
+        title: mode === "edit" ? "Listing updated" : "Listing created",
+        description: "Your listing has been saved successfully.",
+      });
+
       router.push(`/listings/${result.listing.id}`);
       router.refresh();
     } catch (error) {
       console.error("Save listing error:", error);
-      alert(error instanceof Error ? error.message : "Failed to save listing");
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to save listing",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Handle form validation errors
+  const onError = (errors: Record<string, unknown>) => {
+    console.error("Form validation errors:", errors);
+
+    // Find the first error and show it
+    const errorMessages: string[] = [];
+    const fieldNames: Record<string, string> = {
+      title: "Title",
+      description: "Description",
+      propertyType: "Property Type",
+      transactionType: "Transaction Type",
+      price: "Price",
+      province: "Province",
+      city: "City",
+    };
+
+    Object.entries(errors).forEach(([field, error]) => {
+      const fieldName = fieldNames[field] || field;
+      const message = (error as { message?: string })?.message;
+      if (message) {
+        errorMessages.push(`${fieldName}: ${message}`);
+      }
+    });
+
+    toast({
+      title: "Please fix the following errors",
+      description: errorMessages.slice(0, 3).join("\n") + (errorMessages.length > 3 ? `\n...and ${errorMessages.length - 3} more` : ""),
+      variant: "destructive",
+    });
   };
 
   const nextStep = () => setStep((s) => Math.min(s + 1, STEPS.length));
@@ -284,7 +326,7 @@ export function ListingForm({ initialData, mode = "create" }: ListingFormProps) 
         </ol>
       </nav>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-12">
+      <form onSubmit={handleSubmit(onSubmit, onError)} className="mt-12">
         {/* Step 1: Basic Info */}
         {step === 1 && (
           <Card>
@@ -705,6 +747,26 @@ export function ListingForm({ initialData, mode = "create" }: ListingFormProps) 
               <CardTitle>Review Your Listing</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Validation Errors Summary */}
+              {Object.keys(errors).length > 0 && (
+                <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="h-5 w-5 text-red-500 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium text-red-800">Please fix the following errors:</h4>
+                      <ul className="mt-2 list-inside list-disc text-sm text-red-700">
+                        {errors.title && <li>Title: {errors.title.message}</li>}
+                        {errors.propertyType && <li>Property Type: {errors.propertyType.message}</li>}
+                        {errors.transactionType && <li>Transaction Type: {errors.transactionType.message}</li>}
+                        {errors.price && <li>Price: {errors.price.message}</li>}
+                        {errors.province && <li>Province: {errors.province.message}</li>}
+                        {errors.city && <li>City: {errors.city.message}</li>}
+                        {errors.description && <li>Description: {errors.description.message}</li>}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="grid gap-6 md:grid-cols-2">
                 <div>
                   <h4 className="mb-2 font-medium text-gray-700">Basic Info</h4>
